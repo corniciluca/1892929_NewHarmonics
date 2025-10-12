@@ -2,7 +2,9 @@ version: '3.8'
 
 services:
   song-management-service:
-    build: .
+    build: 
+      context: .
+      dockerfile: Dockerfile
     container_name: song-management-service
     ports:
       - "8082:8082"
@@ -10,8 +12,6 @@ services:
       - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/music
     depends_on:
       - mongo
-    volumes:
-      - music_data:/app/music   # TEMPORARY SAVE LOCATION
 
   mongo:
     image: mongo:6
@@ -23,4 +23,3 @@ services:
 
 volumes:
   mongo_data:
-  music_data:
