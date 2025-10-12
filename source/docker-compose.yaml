@@ -1,0 +1,63 @@
+version: '3.8'
+
+# Define a common template for services to avoid repetition
+x-base-service: &base-service
+  restart: unless-stopped
+  networks:
+    - microservices-network
+
+services:
+  api-gateway:
+    <<: *base-service
+    # build context corrected to match local folder name
+    build: ./api_gateway
+    container_name: api-gateway
+    ports:
+      - "9000:9000"
+    depends_on:
+      - user-service
+      - song-service
+      - mongo
+
+  user-service:
+    <<: *base-service
+    # build context corrected to match local folder name
+    build: ./user_service
+    container_name: user-service
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+  song-service:
+    <<: *base-service
+    # build context corrected to match local folder name
+    build: ./song-management-service
+    container_name: song-service
+    ports:
+      - "8082:8082"
+    volumes:
+      - song-data:/app/music
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/music
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - mongo
+
+  mongo:
+    <<: *base-service
+    image: mongo:6
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+# Default driver is 'bridge', so it can be omitted
+networks:
+  microservices-network:
+
+# Default driver is 'local', so it can be omitted
+volumes:
+  song-data:
+  mongo_data:

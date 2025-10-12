@@ -1,0 +1,6 @@
+.mvn/
+.idea/
+.git/
+**/*.class
+**/*.log
+*.iml
