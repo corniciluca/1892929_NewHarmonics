@@ -4,6 +4,7 @@ import it.uniroma1.song_management_service.model.Song;
 import it.uniroma1.song_management_service.repository.SongRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,9 +16,12 @@ public class SongService {
 
     private final SongRepository songRepository;
     private final String uploadDir = "/app/music/";
+    private final RabbitTemplate rabbitTemplate;
+    private static final String SONG_NOTIFICATION_QUEUE = "song_notifications";
 
-    public SongService(SongRepository songRepository) {
+    public SongService(SongRepository songRepository, RabbitTemplate rabbitTemplate) {
         this.songRepository = songRepository;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     public List<Song> getAllSongs() {
@@ -36,7 +40,13 @@ public class SongService {
         song.setGenre(genre);
         song.setFileUrl(filePath);
 
-        return songRepository.save(song);
+        Song savedSong = songRepository.save(song);
+
+        // Send notification to RabbitMQ
+        String message = "New song uploaded by " + artist + ": " + title;
+        rabbitTemplate.convertAndSend(SONG_NOTIFICATION_QUEUE, message);
+
+        return savedSong;
     }
 
     public byte[] downloadSong(String id) throws IOException {

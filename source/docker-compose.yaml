@@ -44,6 +44,27 @@ services:
     depends_on:
       - mongo
 
+  notification-service:
+    <<: *base-service
+    build: ./notification_service
+    container_name: notification-service
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_RABBITMQ_HOST=rabbitmq
+    networks:
+      - microservices-network
+    depends_on:
+      - rabbitmq
+  
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"   # main AMQP port
+      - "15672:15672" # management UI
+    networks:
+      - microservices-network
   mongo:
     <<: *base-service
     image: mongo:6
