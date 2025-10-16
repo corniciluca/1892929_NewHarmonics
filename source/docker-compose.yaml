@@ -18,6 +18,7 @@ services:
       - user-service
       - song-service
       - mongo
+      - rabbitmq
 
   user-service:
     <<: *base-service
@@ -28,6 +29,13 @@ services:
       - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=guest
+      - SPRING_RABBITMQ_PASSWORD=guest
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
 
   song-service:
     <<: *base-service
@@ -43,6 +51,8 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_RABBITMQ_HOST=rabbitmq
       - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=guest
+      - SPRING_RABBITMQ_PASSWORD=guest
     depends_on:
       rabbitmq:
         condition: service_healthy

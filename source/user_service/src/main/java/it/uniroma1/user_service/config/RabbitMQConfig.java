@@ -1,6 +1,7 @@
-package it.uniroma1.song_management_service.config;
+package it.uniroma1.user_service.config;
 
-import org.springframework.amqp.core.*;
+import org.springframework.amqp.core.Exchange;
+import org.springframework.amqp.core.ExchangeBuilder;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
@@ -10,28 +11,19 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
-    @Bean
-    public TopicExchange exchange() {       // for receiving song upload messages
-        return new TopicExchange(RabbitMQConstants.EXCHANGE);
-    }
-
-    @Bean
-    public Queue userFollowQueue() {
-        return QueueBuilder.durable(RabbitMQConstants.USER_FOLLOW_QUEUE).build();
-    }
+    public static final String USER_FOLLOW_EXCHANGE = "user.follow.exchange";
+    public static final String USER_FOLLOW_ROUTING_KEY = "user.followed";
 
     @Bean
     public Exchange userFollowExchange() {
-        return ExchangeBuilder.fanoutExchange(RabbitMQConstants.USER_FOLLOW_EXCHANGE).durable(true).build();
+        return ExchangeBuilder
+                .fanoutExchange(USER_FOLLOW_EXCHANGE)
+                .durable(true)
+                .build();
     }
-
-    public Binding userFollowBinding(Queue userFollowQueue, FanoutExchange userFollowExchange) {
-        return BindingBuilder.bind(userFollowQueue).to(userFollowExchange); // no .with()
-    }
-
 
     @Bean
-    public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
+    public Jackson2JsonMessageConverter jsonMessageConverter() {
         return new Jackson2JsonMessageConverter();
     }
 

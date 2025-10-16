@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 
 import it.uniroma1.user_service.enums.Role;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -52,4 +54,12 @@ public class UserEntity {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_follows",
+            joinColumns = @JoinColumn(name = "follower_id"),  // this user
+            inverseJoinColumns = @JoinColumn(name = "artist_id") // followed artist
+    )
+    private Set<UserEntity> followedArtists = new HashSet<>();
 }
