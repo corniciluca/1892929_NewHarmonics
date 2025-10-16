@@ -41,8 +41,15 @@ services:
     environment:
       - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/music
       - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
     depends_on:
-      - mongo
+      rabbitmq:
+        condition: service_healthy
+      mongo:
+        condition: service_started
+      notification-service:
+        condition: service_started
 
   notification-service:
     <<: *base-service
@@ -55,7 +62,10 @@ services:
     networks:
       - microservices-network
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
+      mongo:
+        condition: service_started
   
   rabbitmq:
     image: rabbitmq:3.13-management
@@ -65,6 +75,12 @@ services:
       - "15672:15672" # management UI
     networks:
       - microservices-network
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   mongo:
     <<: *base-service
     image: mongo:6
@@ -77,6 +93,7 @@ services:
 # Default driver is 'bridge', so it can be omitted
 networks:
   microservices-network:
+    driver: bridge
 
 # Default driver is 'local', so it can be omitted
 volumes:

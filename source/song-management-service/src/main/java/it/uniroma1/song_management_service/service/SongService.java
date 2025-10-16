@@ -1,7 +1,10 @@
 package it.uniroma1.song_management_service.service;
 
+import it.uniroma1.song_management_service.config.RabbitMQConstants;
 import it.uniroma1.song_management_service.model.Song;
 import it.uniroma1.song_management_service.repository.SongRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -17,7 +20,7 @@ public class SongService {
     private final SongRepository songRepository;
     private final String uploadDir = "/app/music/";
     private final RabbitTemplate rabbitTemplate;
-    private static final String SONG_NOTIFICATION_QUEUE = "song_notifications";
+    private static final Logger log = LoggerFactory.getLogger(SongService.class);
 
     public SongService(SongRepository songRepository, RabbitTemplate rabbitTemplate) {
         this.songRepository = songRepository;
@@ -44,7 +47,11 @@ public class SongService {
 
         // Send notification to RabbitMQ
         String message = "New song uploaded by " + artist + ": " + title;
-        rabbitTemplate.convertAndSend(SONG_NOTIFICATION_QUEUE, message);
+        //rabbitTemplate.convertAndSend(SONG_NOTIFICATION_QUEUE, message);
+        rabbitTemplate.convertAndSend(RabbitMQConstants.EXCHANGE, RabbitMQConstants.ROUTING_KEY, message);
+
+        System.out.println("📤 Sent message to RabbitMQ: " + message);
+        log.info("📤 Sent message to RabbitMQ: " + message);
 
         return savedSong;
     }
