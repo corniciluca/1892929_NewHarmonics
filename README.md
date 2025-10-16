@@ -2,8 +2,8 @@
 NewHarmonics is a microservices-based music sharing platform
 
 Work in progress:
-- User managment microservice.
-- Song managment microservice.
-- Notification/subscriptions microservice.
-- Api Gateway.
+- [x] User managment microservice.
+- [x] Song managment microservice.
+- [ ] Notification/subscriptions microservice. - TODO: working feed
+- [x] Api Gateway.
 - Front-end
