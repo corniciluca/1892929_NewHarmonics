@@ -66,4 +66,8 @@ public class SongService {
         new File(song.getFileUrl()).delete();
         songRepository.deleteById(id);
     }
+
+    public List<Song> getSongsByArtistId(Long artistId) {
+        return songRepository.findByArtistId(artistId);
+    }
 }

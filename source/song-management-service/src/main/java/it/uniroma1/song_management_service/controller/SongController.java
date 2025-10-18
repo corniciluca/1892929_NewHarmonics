@@ -52,4 +52,10 @@ public class SongController {
     public void deleteSong(@PathVariable String id) {
         songService.deleteSong(id);
     }
+
+    // Returns all the songs by {artistId}
+    @GetMapping("/artist/{artistId}")
+    public List<Song> getSongsByArtist(@PathVariable Long artistId) {
+        return songService.getSongsByArtistId(artistId);
+    }
 }
