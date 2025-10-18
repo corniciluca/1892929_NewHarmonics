@@ -10,3 +10,4 @@ Work in progress:
 - [ ] Improved search system
 - [ ] Connect fronted to backend
 - [ ] Upload songs to external service
+- [ ] Further improvements and changes
