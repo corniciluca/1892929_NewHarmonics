@@ -29,10 +29,11 @@ public class SongController {
             @RequestParam("file") MultipartFile file,
             @RequestParam("title") String title,
             @RequestParam("artist") String artist,
+            @RequestParam("artistId") Long artistId,
             @RequestParam("album") String album,
             @RequestParam("genre") String genre
     ) throws IOException {
-        return songService.uploadSong(file, title, artist, album, genre);
+        return songService.uploadSong(file, title, artist, artistId, album, genre);
     }
 
     @GetMapping("/{id}/download")

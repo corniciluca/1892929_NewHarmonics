@@ -31,7 +31,7 @@ public class SongService {
         return songRepository.findAll();
     }
 
-    public Song uploadSong(MultipartFile file, String title, String artist, String album, String genre) throws IOException {
+    public Song uploadSong(MultipartFile file, String title, String artist, Long artistId, String album, String genre) throws IOException {
         // Save file locally
         String filePath = uploadDir + file.getOriginalFilename();
         Files.copy(file.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
@@ -39,6 +39,7 @@ public class SongService {
         Song song = new Song();
         song.setTitle(title);
         song.setArtist(artist);
+        song.setArtistId(artistId);
         song.setAlbum(album);
         song.setGenre(genre);
         song.setFileUrl(filePath);
@@ -47,7 +48,6 @@ public class SongService {
 
         // Send notification to RabbitMQ
         String message = "New song uploaded by " + artist + ": " + title;
-        //rabbitTemplate.convertAndSend(SONG_NOTIFICATION_QUEUE, message);
         rabbitTemplate.convertAndSend(RabbitMQConstants.EXCHANGE, RabbitMQConstants.ROUTING_KEY, message);
 
         System.out.println("📤 Sent message to RabbitMQ: " + message);

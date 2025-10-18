@@ -1,9 +1,6 @@
 package it.uniroma1.song_management_service.config;
 
 import org.springframework.amqp.core.*;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -13,34 +10,6 @@ public class RabbitMQConfig {
     @Bean
     public TopicExchange exchange() {       // for receiving song upload messages
         return new TopicExchange(RabbitMQConstants.EXCHANGE);
-    }
-
-    @Bean
-    public Queue userFollowQueue() {
-        return QueueBuilder.durable(RabbitMQConstants.USER_FOLLOW_QUEUE).build();
-    }
-
-    @Bean
-    public Exchange userFollowExchange() {
-        return ExchangeBuilder.fanoutExchange(RabbitMQConstants.USER_FOLLOW_EXCHANGE).durable(true).build();
-    }
-
-    public Binding userFollowBinding(Queue userFollowQueue, FanoutExchange userFollowExchange) {
-        return BindingBuilder.bind(userFollowQueue).to(userFollowExchange); // no .with()
-    }
-
-
-    @Bean
-    public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
-        return new Jackson2JsonMessageConverter();
-    }
-
-    @Bean
-    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory,
-                                         Jackson2JsonMessageConverter converter) {
-        RabbitTemplate template = new RabbitTemplate(connectionFactory);
-        template.setMessageConverter(converter);
-        return template;
     }
 
 }
