@@ -48,7 +48,7 @@ public class SongService {
 
         // Send notification to RabbitMQ
         String message = "New song uploaded by " + artist + ": " + title;
-        rabbitTemplate.convertAndSend(RabbitMQConstants.EXCHANGE, RabbitMQConstants.ROUTING_KEY, message);
+        rabbitTemplate.convertAndSend(RabbitMQConstants.MUSIC_EXCHANGE, RabbitMQConstants.SONG_UPLOADED_ROUTING_KEY, message);
 
         System.out.println("📤 Sent message to RabbitMQ: " + message);
         log.info("📤 Sent message to RabbitMQ: " + message);

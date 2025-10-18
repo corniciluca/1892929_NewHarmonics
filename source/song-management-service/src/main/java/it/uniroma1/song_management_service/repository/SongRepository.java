@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface SongRepository extends MongoRepository<Song, String> {
     List<Song> findByArtistIdIn(List<Long> artistIds);
+    List<Song> findByArtistId(Long artistId);
 }
