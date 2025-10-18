@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users/{id}/feed")
+@RequestMapping("/feed")
 public class FeedController {
 
     private final FeedService feedService;
@@ -16,7 +16,7 @@ public class FeedController {
         this.feedService = feedService;
     }
 
-    @GetMapping
+    @GetMapping("/{id}")
     public List<Song> getUserFeed(@PathVariable("id") Long id) {
         return feedService.getFeedForUser(id);
     }
