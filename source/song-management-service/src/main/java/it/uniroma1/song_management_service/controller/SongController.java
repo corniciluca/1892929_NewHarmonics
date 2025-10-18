@@ -24,6 +24,7 @@ public class SongController {
         return songService.getAllSongs();
     }
 
+    // Uploads a song
     @PostMapping("/upload")
     public Song uploadSong(
             @RequestParam("file") MultipartFile file,
@@ -36,6 +37,7 @@ public class SongController {
         return songService.uploadSong(file, title, artist, artistId, album, genre);
     }
 
+    // Downloads song {id}
     @GetMapping("/{id}/download")
     public ResponseEntity<byte[]> downloadSong(@PathVariable String id) throws IOException {
         byte[] data = songService.downloadSong(id);
@@ -45,6 +47,7 @@ public class SongController {
                 .body(data);
     }
 
+    // Deletes song {id}
     @DeleteMapping("/{id}")
     public void deleteSong(@PathVariable String id) {
         songService.deleteSong(id);

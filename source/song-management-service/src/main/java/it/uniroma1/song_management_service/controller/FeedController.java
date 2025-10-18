@@ -16,6 +16,7 @@ public class FeedController {
         this.feedService = feedService;
     }
 
+    // Returns the feed of user {id}
     @GetMapping("/{id}")
     public List<Song> getUserFeed(@PathVariable("id") Long id) {
         return feedService.getFeedForUser(id);
