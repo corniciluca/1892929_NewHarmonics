@@ -8,6 +8,6 @@ Work in progress:
 - [x] Api Gateway
 - [x] Front-end
 - [ ] Improved search system
-- [ ] Connect fronted to backend
+- [ ] Connect frontend to backend
 - [ ] Upload songs to external service
 - [ ] Further improvements and changes
