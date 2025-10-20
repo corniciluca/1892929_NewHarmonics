@@ -66,6 +66,27 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
+		<dependency>
+
+			<groupId>jakarta.validation</groupId>
+
+			<artifactId>jakarta.validation-api</artifactId>
+
+			<version>3.0.2</version>
+
+		</dependency>
+
+		<dependency>
+
+			<groupId>org.projectlombok</groupId>
+
+			<artifactId>lombok</artifactId>
+
+			<version>1.18.32</version>
+
+			<scope>provided</scope>
+
+		</dependency>
     </dependencies>
 
 	<build>

@@ -33,6 +33,12 @@ public class SongService {
 
     public Song uploadSong(MultipartFile file, String title, String artist, Long artistId, String album, String genre) throws IOException {
         // Save file locally
+        Path uploadPath = Paths.get(uploadDir);
+    
+        // Docker volume is already mounted, just check if writable
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
         String filePath = uploadDir + file.getOriginalFilename();
         Files.copy(file.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
 
@@ -69,5 +75,25 @@ public class SongService {
 
     public List<Song> getSongsByArtistId(Long artistId) {
         return songRepository.findByArtistId(artistId);
+    }
+
+    public Song getSongById(String id) {
+        return songRepository.findById(id).orElseThrow();
+    }
+
+    public Song updateSong(String id, Song updatedSong) {
+        Song existingSong = songRepository.findById(id).orElseThrow();
+
+        if (updatedSong.getTitle() != null && !updatedSong.getTitle().isBlank()) {
+            existingSong.setTitle(updatedSong.getTitle());
+        }
+        if (updatedSong.getAlbum() != null && !updatedSong.getAlbum().isBlank()) {
+            existingSong.setAlbum(updatedSong.getAlbum());
+        }
+        if (updatedSong.getGenre() != null && !updatedSong.getGenre().isBlank()) {
+            existingSong.setGenre(updatedSong.getGenre());
+        }
+
+        return songRepository.save(existingSong);       
     }
 }

@@ -7,6 +7,31 @@ x-base-service: &base-service
     - microservices-network
 
 services:
+
+
+# React Frontend
+  frontend:
+    <<: *base-service
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_GATEWAY_URL=http://localhost:9000
+
+  notification-service:
+    <<: *base-service
+    # build context corrected to match local folder name
+    build: ./notification_service
+    container_name: notification-service
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - rabbitmq
+      - mongo
+
   api-gateway:
     <<: *base-service
     # build context corrected to match local folder name
@@ -17,8 +42,9 @@ services:
     depends_on:
       - user-service
       - song-service
+      - notification-service
+      - frontend
       - mongo
-      - rabbitmq
 
   user-service:
     <<: *base-service
@@ -29,15 +55,8 @@ services:
       - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_RABBITMQ_HOST=rabbitmq
-      - SPRING_RABBITMQ_PORT=5672
-      - SPRING_RABBITMQ_USERNAME=guest
-      - SPRING_RABBITMQ_PASSWORD=guest
-    volumes:
-      - userdb_data:/data/userdb
     depends_on:
-      rabbitmq:
-        condition: service_healthy
+      - rabbitmq
 
   song-service:
     <<: *base-service
@@ -51,46 +70,24 @@ services:
     environment:
       - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/music
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_RABBITMQ_HOST=rabbitmq
-      - SPRING_RABBITMQ_PORT=5672
-      - SPRING_RABBITMQ_USERNAME=guest
-      - SPRING_RABBITMQ_PASSWORD=guest
     depends_on:
-      rabbitmq:
-        condition: service_healthy
-      mongo:
-        condition: service_started
-      notification-service:
-        condition: service_started
+      - mongo
+      - rabbitmq
 
-  notification-service:
-    <<: *base-service
-    build: ./notification_service
-    container_name: notification-service
-    ports:
-      - "8083:8083"
-    environment:
-      - SPRING_RABBITMQ_HOST=rabbitmq
-    networks:
-      - microservices-network
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      mongo:
-        condition: service_started
-  
   rabbitmq:
-    image: rabbitmq:3.13-management
+    <<: *base-service
+    image: rabbitmq:3.11-management
     container_name: rabbitmq
     ports:
-      - "5672:5672"   # main AMQP port
-      - "15672:15672" # management UI
-    networks:
-      - microservices-network
+      - "5672:5672"   # AMQP protocol
+      - "15672:15672" # Management UI
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
     healthcheck:
-      test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
-      interval: 10s
-      timeout: 5s
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 5s
+      timeout: 3s
       retries: 5
 
   mongo:
@@ -105,10 +102,8 @@ services:
 # Default driver is 'bridge', so it can be omitted
 networks:
   microservices-network:
-    driver: bridge
 
 # Default driver is 'local', so it can be omitted
 volumes:
   song-data:
   mongo_data:
-  userdb_data:

@@ -26,6 +26,7 @@ spring:
     multipart:
       max-file-size: 20MB
       max-request-size: 25MB
+      location: /app/music
 
 server:
   port: 8082
