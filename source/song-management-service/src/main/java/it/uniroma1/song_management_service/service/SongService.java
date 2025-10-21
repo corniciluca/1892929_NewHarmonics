@@ -5,6 +5,7 @@ import it.uniroma1.song_management_service.model.Song;
 import it.uniroma1.song_management_service.repository.SongRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -18,13 +19,14 @@ import java.util.List;
 public class SongService {
 
     private final SongRepository songRepository;
-    private final String uploadDir = "/app/music/";
+    private final Path uploadDir;
     private final RabbitTemplate rabbitTemplate;
     private static final Logger log = LoggerFactory.getLogger(SongService.class);
 
-    public SongService(SongRepository songRepository, RabbitTemplate rabbitTemplate) {
+    public SongService(SongRepository songRepository, RabbitTemplate rabbitTemplate, @Value("${app.music.storage-dir:/app/music}") String uploadDirPath) {
         this.songRepository = songRepository;
         this.rabbitTemplate = rabbitTemplate;
+        this.uploadDir = Paths.get(uploadDirPath);
     }
 
     public List<Song> getAllSongs() {
@@ -33,11 +35,10 @@ public class SongService {
 
     public Song uploadSong(MultipartFile file, String title, String artist, Long artistId, String album, String genre) throws IOException {
         // Save file locally
-        Path uploadPath = Paths.get(uploadDir);
     
         // Docker volume is already mounted, just check if writable
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
+        if (!Files.exists(uploadDir)) {
+            Files.createDirectories(uploadDir);
         }
         String filePath = uploadDir + file.getOriginalFilename();
         Files.copy(file.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
