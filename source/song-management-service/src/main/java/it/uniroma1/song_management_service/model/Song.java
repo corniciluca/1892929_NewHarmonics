@@ -11,6 +11,7 @@ public class Song {
     private String id;
     private String title;
     private String artist;
+    private Long artistId;
     private String album;
     private String genre;
     private String fileUrl; // URL or path to file

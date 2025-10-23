@@ -5,5 +5,9 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.List;
 
 public interface SongRepository extends MongoRepository<Song, String> {
-    List<Song> findByArtist(String artist);
+    List<Song> findByArtistIdIn(List<Long> artistIds);
+    List<Song> findByArtistId(Long artistId);
+    Song findByTitle(String title);
+    Song findByFileUrl(String fileUrl);
+    Song findBy(String id);
 }

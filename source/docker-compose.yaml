@@ -7,6 +7,30 @@ x-base-service: &base-service
     - microservices-network
 
 services:
+
+# React Frontend
+  frontend:
+    <<: *base-service
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_GATEWAY_URL=http://localhost:9000
+
+  notification-service:
+    <<: *base-service
+    # build context corrected to match local folder name
+    build: ./notification_service
+    container_name: notification-service
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - rabbitmq
+      - mongo
+
   api-gateway:
     <<: *base-service
     # build context corrected to match local folder name
@@ -17,6 +41,8 @@ services:
     depends_on:
       - user-service
       - song-service
+      - notification-service
+      - frontend
       - mongo
 
   user-service:
@@ -26,8 +52,12 @@ services:
     container_name: user-service
     ports:
       - "8080:8080"
+    volumes:
+      - userdb_data:/data/userdb
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - rabbitmq
 
   song-service:
     <<: *base-service
@@ -43,28 +73,24 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       - mongo
-
-  notification-service:
-    <<: *base-service
-    build: ./notification_service
-    container_name: notification-service
-    ports:
-      - "8083:8083"
-    environment:
-      - SPRING_RABBITMQ_HOST=rabbitmq
-    networks:
-      - microservices-network
-    depends_on:
       - rabbitmq
-  
+
   rabbitmq:
-    image: rabbitmq:3.13-management
+    <<: *base-service
+    image: rabbitmq:3.11-management
     container_name: rabbitmq
     ports:
-      - "5672:5672"   # main AMQP port
-      - "15672:15672" # management UI
-    networks:
-      - microservices-network
+      - "5672:5672"   # AMQP protocol
+      - "15672:15672" # Management UI
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
   mongo:
     <<: *base-service
     image: mongo:6
@@ -82,3 +108,4 @@ networks:
 volumes:
   song-data:
   mongo_data:
+  userdb_data:

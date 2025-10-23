@@ -1,5 +1,6 @@
 package it.uniroma1.user_service.controller;
 
+import it.uniroma1.user_service.service.FollowService;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import it.uniroma1.user_service.model.UserEntity;
 import it.uniroma1.user_service.service.UserService;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -25,24 +27,29 @@ public class UserController {
 
     private final UserService userService;
     private final UserModelAssembler assembler;
+    private final FollowService followService;
 
-    public UserController(UserService userService, UserModelAssembler assembler) {
+    public UserController(UserService userService, FollowService followService, UserModelAssembler assembler) {
         this.userService = userService;
+        this.followService = followService;
         this.assembler = assembler;
     }
 
+    // Returns all users
     @GetMapping
     public CollectionModel<EntityModel<UserEntity>> getAllUsers() {
         List<UserEntity> users = userService.findAllUsers();
         return assembler.toCollectionModel(users);
     }
 
+    // Returns user {id}
     @GetMapping("/{id}")
-    public EntityModel<UserEntity> getOneUser(@PathVariable Long id) {
+    public EntityModel<UserEntity> getOneUser(@PathVariable("id") Long id) {
         UserEntity UserEntity = userService.findUserById(id);
         return assembler.toModel(UserEntity);
     }
 
+    // Creates a new user
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody UserEntity newUser) {
         UserEntity savedUser = userService.createUserEntity(newUser);
@@ -54,6 +61,7 @@ public class UserController {
                 .body(entityModel);
     }
 
+    // Updates user {id}
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UserEntity userDetails) {
         UserEntity updatedUser = userService.updateUserEntity(id, userDetails);
@@ -63,10 +71,33 @@ public class UserController {
         return ResponseEntity.ok(entityModel);
     }
 
+    // Deletes user {id} (and all their songs, alongside removing them from the following list of all other users)
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         userService.deleteUserEntity(id);
         
         return ResponseEntity.noContent().build();
     }
+
+    // Returns all the users followed by user {id}
+    @GetMapping("/{id}/followed")
+    public ResponseEntity<Set<UserEntity>> getFollowedArtists(@PathVariable("id") Long id) {
+        Set<UserEntity> followed = followService.getFollowedArtists(id);
+        return ResponseEntity.ok(followed);
+    }
+
+    // Adds user {artistId} to the following list of user {id}
+    @PostMapping("/{id}/follow/{artistId}")
+    public ResponseEntity<Void> followArtist(@PathVariable Long id, @PathVariable Long artistId) {
+        followService.followArtist(id, artistId);
+        return ResponseEntity.ok().build();
+    }
+
+    // Removes user {artistId} from the following list of user {id}
+    @DeleteMapping("/{id}/unfollow/{artistId}")
+    public ResponseEntity<Void> unfollowArtist(@PathVariable Long id, @PathVariable Long artistId) {
+        followService.unfollowArtist(id, artistId);
+        return ResponseEntity.ok().build();
+    }
+
 }
