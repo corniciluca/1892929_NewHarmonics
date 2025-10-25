@@ -28,8 +28,10 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
-      - rabbitmq
-      - mongo
+      mongo:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
 
   api-gateway:
     <<: *base-service
@@ -57,7 +59,8 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
 
   song-service:
     <<: *base-service
@@ -72,9 +75,10 @@ services:
       - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/music
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
-      - mongo
-      - rabbitmq
-
+      mongo:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
   rabbitmq:
     <<: *base-service
     image: rabbitmq:3.11-management

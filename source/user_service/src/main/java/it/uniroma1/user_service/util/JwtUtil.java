@@ -9,6 +9,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.nio.charset.StandardCharsets;
 
 @Component
 public class JwtUtil {
@@ -20,7 +21,7 @@ public class JwtUtil {
     }
 
     private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(jwtConfig.getSecret().getBytes());
+        return Keys.hmacShaKeyFor(jwtConfig.getSecret().getBytes(StandardCharsets.UTF_8));
     }
 
     public String generateToken(String username, String userId, String role) {

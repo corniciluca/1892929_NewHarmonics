@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -71,24 +72,29 @@ public class SongController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateSong(
+    public ResponseEntity<Object> updateSong(
             @PathVariable String id,
-            @RequestBody Song updatedSong,
-            @RequestHeader("X-User-Id") String userId,
-            @RequestHeader("X-User-Role") String role) {
-        
-        if (!"ARTIST".equals(role)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("Only artists can update songs");
-        }
+            @RequestHeader("X-User-Id") String userId, // 🚨 Keep this for ownership check 🚨
+            @RequestHeader("X-User-Role") String role,
+            @RequestBody Song updatedSong) {
 
         Song existingSong = songService.getSongById(id);
-        
-        // Check if the artist owns this song
-        if (!existingSong.getArtistId().equals(userId)) {
+        System.out.println("DEBUG: User ID: " + userId + ", Song Artist ID: " + existingSong.getArtistId());
+
+        // Check ownership
+        String existingArtistId = String.valueOf(existingSong.getArtistId());
+        String currentUserId = String.valueOf(userId);
+        System.out.println("DEBUG: User ID: " + currentUserId + ", Song Artist ID: " + existingArtistId);
+        boolean isOwner = currentUserId.equals(existingArtistId);
+        System.out.println("DEBUG: Ownership Check Result: " + isOwner);
+
+        if (!isOwner) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body("You can only update your own songs");
         }
+
+        // Keep the original artist ID (as the request body might not contain it)
+        updatedSong.setArtistId(existingSong.getArtistId());
 
         return ResponseEntity.ok(songService.updateSong(id,updatedSong));
     }
@@ -96,23 +102,31 @@ public class SongController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteSong(
             @PathVariable String id,
-            @RequestHeader("X-User-Id") String userId,
-            @RequestHeader("X-User-Role") String role) {
-        
-        if (!"ARTIST".equals(role)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("Only artists can delete songs");
+            @RequestHeader("X-User-Id") String userId
+    ) {
+        Song song = songService.getSongById(id);
+
+        // Check for song existence
+        if (song == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Song not found");
         }
 
-        Song song = songService.getSongById(id);
-        
-        if (!song.getArtistId().equals(userId)) {
+        // Defensive conversion and comparison (Fix for deleteSong)
+        String existingArtistId = String.valueOf(song.getArtistId());
+        String currentUserId = String.valueOf(userId);
+
+        System.out.println("DEBUG (deleteSong): User ID: " + currentUserId + ", Song Artist ID: " + existingArtistId);
+        boolean isOwner = currentUserId.equals(existingArtistId);
+        System.out.println("DEBUG (deleteSong): Ownership Check Result: " + isOwner);
+
+        // Check ownership
+        if (!isOwner) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body("You can only delete your own songs");
         }
 
         songService.deleteSong(id);
-        return ResponseEntity.ok("Song deleted successfully");
+        return ResponseEntity.ok(Map.of("message", "Song deleted successfully"));
     }
 
     // Returns all the songs by {artistId}
