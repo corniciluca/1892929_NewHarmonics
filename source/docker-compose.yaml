@@ -73,6 +73,7 @@ services:
     depends_on:
       - mongo
       - rabbitmq
+      - elasticsearch
 
   rabbitmq:
     <<: *base-service
@@ -99,6 +100,25 @@ services:
     volumes:
       - mongo_data:/data/db
 
+  elasticsearch:
+    <<: *base-service
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: elasticsearch
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200 >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
 # Default driver is 'bridge', so it can be omitted
 networks:
   microservices-network:
@@ -107,3 +127,4 @@ networks:
 volumes:
   song-data:
   mongo_data:
+  elasticsearch_data:
