@@ -21,15 +21,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) // Use new lambda syntax
-            .sessionManagement(session -> 
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
-            .authorizeHttpRequests(auth -> auth
-                // Trust the gateway and permit all incoming requests
-                .anyRequest().permitAll()
-            );
-        
+                .csrf(csrf -> csrf.disable()) // Use new lambda syntax
+                // 🚨 THE FIX: Allow H2 console to load inside an iframe
+                .headers(headers -> headers
+                        .frameOptions(frameOptions -> frameOptions.sameOrigin())
+                )
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .authorizeHttpRequests(auth -> auth
+                        // Trust the gateway and permit all incoming requests
+                        .anyRequest().permitAll()
+                );
+
         return http.build();
     }
 }
