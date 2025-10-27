@@ -31,11 +31,7 @@ public class SongService {
     private final RabbitTemplate rabbitTemplate;
     private static final Logger log = LoggerFactory.getLogger(SongService.class);
 
-    public SongService(SongRepository songRepository, RabbitTemplate rabbitTemplate, @Value("${app.music.storage-dir:/app/music}") String uploadDirPath) {
-
-    public SongService(SongRepository songRepository,
-                       SongSearchRepository searchRepository,
-                       RabbitTemplate rabbitTemplate) {
+    public SongService(SongRepository songRepository, SongSearchRepository searchRepository, RabbitTemplate rabbitTemplate, @Value("${app.music.storage-dir:/app/music}") String uploadDirPath) {
         this.songRepository = songRepository;
         this.searchRepository = searchRepository;
         this.rabbitTemplate = rabbitTemplate;
