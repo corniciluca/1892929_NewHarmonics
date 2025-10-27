@@ -18,8 +18,34 @@ public class RabbitMQConfig {
     }
 
     @Bean
+    public Queue songUploadedQueue() {
+        return new Queue(RabbitMQConstants.SONG_UPLOADED_ROUTING_KEY, true); // durable queue
+    }
+
+    @Bean
+    public Queue songPlayedQueue() {
+        return new Queue(RabbitMQConstants.SONG_PLAYED_QUEUE, true); // durable queue
+    }
+
+    @Bean
     public Queue userDeletedQueue() {
         return new Queue(RabbitMQConstants.USER_DELETED_QUEUE, true); // durable queue
+    }
+
+    @Bean
+    public Binding songUploadedBinding(Queue songUploadedQueue, TopicExchange musicExchange) {
+        return BindingBuilder
+                .bind(songUploadedQueue)
+                .to(musicExchange)
+                .with(RabbitMQConstants.SONG_UPLOADED_ROUTING_KEY);
+    }
+
+    @Bean
+    public Binding songPlayedBinding(Queue songPlayedQueue, TopicExchange musicExchange) {
+        return BindingBuilder
+                .bind(songPlayedQueue)
+                .to(musicExchange)
+                .with(RabbitMQConstants.SONG_PLAYED_ROUTING_KEY);
     }
 
     @Bean

@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: song-management-service
+
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/song_management_service
+
+  elasticsearch:
+    uris: http://localhost:9200
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 25MB
+      location: /tmp/music
+
+server:
+  port: 0
