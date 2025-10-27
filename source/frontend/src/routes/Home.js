@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Typography, Container, Grid, Box, Button, useTheme, Paper, Fade } from "@mui/material";
 import SongCard from "../components/SongCard";
-import { getSongs } from "../api/songApi";
+import SongList from "../components/SongList";
+import { getSongs, getRecentSongs, getUserFeed, getTrendingSongs, getSongsByArtistId } from "../api/songApi";
 
-export default function Home() {
+export default function Home({ currentUser }) {
   const theme = useTheme();
   const sectionStyle = color => ({
     background: `linear-gradient(135deg, ${color}22 0%, ${color}44 100%)`,
@@ -11,13 +12,34 @@ export default function Home() {
     marginBottom: theme.spacing(4), border: `1.5px solid ${color}`,
   });
 
-  const [songs, setSongs] = useState([]);
-  useEffect(() => { getSongs().then(setSongs); }, []);
+  const [trending, setTrending] = useState([]);
+  const [recent, setRecent] = useState([]);
+  const [following, setFollowing] = useState([]);
+  const [yourMusic, setYourMusic] = useState([]);
 
-  // Demo: raggruppa e mostra (customizza come vuoi)
-  const newPopular = songs.slice(0, 5);
-  const following = songs.slice(5, 9);
-  const yourMusic = songs.slice(9, 13);
+  const isLoggedIn = !!currentUser;
+  const isArtist = currentUser?.role === 'ARTIST';
+
+  useEffect(() => {
+    // Public lists
+    getRecentSongs().then(setRecent).catch(() => setRecent([]));
+    getTrendingSongs().then(setTrending).catch(() => setTrending([]));
+
+    // Following: only for logged users
+    if (isLoggedIn) {
+      // Use feed endpoint to get songs from followed artists
+      getUserFeed(currentUser.id).then(setFollowing).catch(() => setFollowing([]));
+    } else {
+      setFollowing([]);
+    }
+
+    // Your music: only for logged users that are artists
+    if (isLoggedIn && isArtist) {
+      getSongsByArtistId(currentUser.id).then(setYourMusic).catch(() => setYourMusic([]));
+    } else {
+      setYourMusic([]);
+    }
+  }, [currentUser]);
 
   return (
     <Container sx={{mt:4, mb:4}} maxWidth="xl">
@@ -35,44 +57,38 @@ export default function Home() {
             </Typography>
           </Paper>
           <Box sx={sectionStyle("#7e57c2")}>
-            <Typography variant="h5" fontWeight={600} color="#5e35b1" mb={2}>New & Popular</Typography>
-            <Grid container spacing={3}>
-              {newPopular.map(song => (
-                <Grid item xs={12} sm={6} md={2.4} key={song.id}>
-                  <SongCard song={song} color="#7e57c2"/>
-                </Grid>
-              ))}
-            </Grid>
-            <Box sx={{display:'flex', justifyContent:'flex-end', mt:2}}>
-              <Button variant="contained" color="secondary" size="small" sx={{borderRadius: 2}}>More</Button>
-            </Box>
+            <SongList songs={trending} title="Trending" variant="carousel" itemWidth={220} height={320} />
           </Box>
+
           <Box sx={sectionStyle("#009688")}>
-            <Typography variant="h5" fontWeight={600} color="#00695c" mb={2}>Following</Typography>
-            <Grid container spacing={3}>
-              {following.map(song => (
-                <Grid item xs={12} sm={6} md={2.4} key={song.id}>
-                  <SongCard song={song} color="#009688"/>
-                </Grid>
-              ))}
-            </Grid>
-            <Box sx={{display:'flex', justifyContent:'flex-end', mt:2}}>
-              <Button variant="contained" color="info" size="small" sx={{borderRadius: 2}}>More</Button>
-            </Box>
+            <SongList songs={recent} title="Recent Uploads" variant="carousel" itemWidth={220} height={320} />
           </Box>
-          <Box sx={sectionStyle("#ffa726")}>
-            <Typography variant="h5" fontWeight={600} color="#f57c00" mb={2}>Your music</Typography>
-            <Grid container spacing={3}>
-              {yourMusic.map(song => (
-                <Grid item xs={12} sm={6} md={2.4} key={song.id}>
-                  <SongCard song={song} color="#ffa726"/>
-                </Grid>
-              ))}
-            </Grid>
-            <Box sx={{display:'flex', justifyContent:'flex-end', mt:2}}>
-              <Button variant="contained" color="warning" size="small" sx={{borderRadius: 2}}>More</Button>
+
+          {isLoggedIn && (
+            <Box sx={sectionStyle("#4db6ac")}>
+              <Typography variant="h5" fontWeight={600} color="#00695c" mb={2}>Following</Typography>
+              <Grid container spacing={3}>
+                {following.map(song => (
+                  <Grid item xs={12} sm={6} md={2.4} key={song.id || song._id}>
+                    <SongCard song={song} color="#4db6ac"/>
+                  </Grid>
+                ))}
+              </Grid>
             </Box>
-          </Box>
+          )}
+
+          {isLoggedIn && isArtist && (
+            <Box sx={sectionStyle("#ffa726")}>
+              <Typography variant="h5" fontWeight={600} color="#f57c00" mb={2}>Your music</Typography>
+              <Grid container spacing={3}>
+                {yourMusic.map(song => (
+                  <Grid item xs={12} sm={6} md={2.4} key={song.id || song._id}>
+                    <SongCard song={song} color="#ffa726"/>
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
+          )}
         </Box>
       </Fade>
     </Container>

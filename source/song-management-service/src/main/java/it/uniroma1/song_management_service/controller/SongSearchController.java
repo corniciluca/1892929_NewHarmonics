@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/songs/search")
-@CrossOrigin(origins = "*")
 public class SongSearchController {
     
     @Autowired

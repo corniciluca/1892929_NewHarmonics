@@ -1,13 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { AppBar, Toolbar, Typography, IconButton, Box, TextField, Button } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'; // <-- 2. ICONA IMPORTATA
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import SearchIcon from '@mui/icons-material/Search';
 import { Link, useNavigate } from 'react-router-dom';
 
 // 1. ACCETTA LE PROPS (isLoggedIn, isArtist, onLogout)
 export default function Navbar({ isLoggedIn, isArtist, onLogout }) {
   const navigate = useNavigate();
+  const [query, setQuery] = useState('');
+
+  const handleSearch = () => {
+    const trimmed = (query || '').trim();
+    if (trimmed.length === 0) return;
+    navigate(`/search?q=${encodeURIComponent(trimmed)}`);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') handleSearch();
+  };
 
   return (
     <AppBar position="static" color="transparent" elevation={0}>
@@ -21,13 +33,20 @@ export default function Navbar({ isLoggedIn, isArtist, onLogout }) {
           NewHarmonics
         </Typography>
         
-        <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
+        <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <TextField
             variant="outlined"
             placeholder="Search for artists, songs..."
             size="small"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={handleKeyDown}
             sx={{ width: 400, bgcolor:'white', borderRadius:2 }}
+            inputProps={{ 'aria-label': 'search' }}
           />
+          <IconButton onClick={handleSearch} sx={{ ml: 1, bgcolor: 'white' }} aria-label="search">
+            <SearchIcon />
+          </IconButton>
         </Box>
 
         <Box sx={{display: 'flex', alignItems: 'center'}}>

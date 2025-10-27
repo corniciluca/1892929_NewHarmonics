@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
+import { PlayerProvider } from './components/PlayerContext';
+import SongPlayer from './components/SongPlayer';
 import Home from './routes/Home';
 import Login from './routes/Login';
 import Register from './routes/Register';
@@ -16,6 +18,7 @@ import SongsManagement from './routes/SongsManagement';
 import Following from './routes/Following';
 import Dashboard from './routes/Dashboard';
 import Notification from './routes/Notification';
+import SearchResults from './routes/SearchResults';
 
 import SongEdit from './routes/SongEdit';
 
@@ -85,9 +88,10 @@ function App() {
   const isArtist = currentUser?.role === 'ARTIST';
 
   return (
-    <Router>
-      <Navbar isLoggedIn={isLoggedIn} onLogout={handleLogout} isArtist={isArtist} />
-      <Routes>
+    <PlayerProvider>
+      <Router>
+        <Navbar isLoggedIn={isLoggedIn} onLogout={handleLogout} isArtist={isArtist} />
+        <Routes>
         <Route path="/" element={<Home currentUser={currentUser} />} />
         <Route 
           path="/login" 
@@ -110,6 +114,7 @@ function App() {
           path="/dashboard" 
           element={isLoggedIn ? <Dashboard currentUser={currentUser} /> : <Navigate to="/login" />} 
         />
+        <Route path="/search" element={<SearchResults />} />
         <Route 
           path="/following" 
           element={isLoggedIn ? <Following currentUser={currentUser} /> : <Navigate to="/login" />} 
@@ -133,8 +138,10 @@ function App() {
         />
         {/* Assicurati di aggiungere tutte le altre tue rotte qui */}
         <Route path="*" element={<NotFound />} />
-      </Routes>
-    </Router>
+        </Routes>
+        <SongPlayer />
+      </Router>
+    </PlayerProvider>
   );
 }
 

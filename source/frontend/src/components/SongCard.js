@@ -1,12 +1,17 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
-  Card, CardContent, CardMedia, Typography, CardActions, IconButton, Box
+  Card, CardContent, CardMedia, Typography, CardActions, IconButton, Box, Chip
 } from "@mui/material";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import FastRewindIcon from "@mui/icons-material/FastRewind";
 import FastForwardIcon from "@mui/icons-material/FastForward";
+import VisibilityIcon from '@mui/icons-material/Visibility';
+
+import { PlayerContext } from './PlayerContext';
 
 export default function SongCard({ song, color }) {
+  const visuals = song.playCount || song.play_count || song.views || song.visuals || 0;
+  const player = useContext(PlayerContext);
   return (
     <Card sx={{
       display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -17,6 +22,10 @@ export default function SongCard({ song, color }) {
       <CardContent sx={{ textAlign: "center" }}>
         <Typography variant="h6" fontWeight={600}>{song.title}</Typography>
         <Typography variant="subtitle2" color="text.secondary">{song.artist}</Typography>
+        <Box sx={{ mt: 1, display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'center' }}>
+          <VisibilityIcon fontSize="small" sx={{ color: 'text.secondary' }} />
+          <Typography variant="caption" color="text.secondary">{visuals}</Typography>
+        </Box>
       </CardContent>
       <Box sx={{
         bgcolor: color || "#bdbdbd", width: 90, height: 90, borderRadius: 3, mb: 1,
@@ -30,9 +39,11 @@ export default function SongCard({ song, color }) {
         />
       </Box>
       <CardActions sx={{ justifyContent: 'center', mb: 1 }}>
-        <IconButton sx={{ color }}><FastRewindIcon /></IconButton>
-        <IconButton sx={{ color }}><PlayArrowIcon /></IconButton>
-        <IconButton sx={{ color }}><FastForwardIcon /></IconButton>
+        <IconButton sx={{ color }} onClick={() => {/* optional previous */}}><FastRewindIcon /></IconButton>
+        <IconButton sx={{ color }} onClick={() => player && player.playSong && player.playSong(song)}>
+          <PlayArrowIcon />
+        </IconButton>
+        <IconButton sx={{ color }} onClick={() => {/* optional next */}}><FastForwardIcon /></IconButton>
       </CardActions>
     </Card>
   );
