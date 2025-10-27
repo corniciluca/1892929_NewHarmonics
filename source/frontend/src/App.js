@@ -22,6 +22,7 @@ import SearchResults from './routes/SearchResults';
 
 import SongEdit from './routes/SongEdit';
 
+import Feed from './routes/Feed';
 
 import { checkLoginStatus, logout } from './api/api';
 import { getUserById } from './api/userApi';
@@ -136,7 +137,12 @@ function App() {
           path="/edit-song/:id" 
           element={isLoggedIn && isArtist ? <SongEdit /> : <Navigate to="/" />} 
         />
-        {/* Assicurati di aggiungere tutte le altre tue rotte qui */}
+
+        <Route
+            path="/feed"
+            element={isLoggedIn ? <Feed currentUser={currentUser} /> : <Navigate to="/login" />}
+        />
+
         <Route path="*" element={<NotFound />} />
         </Routes>
         <SongPlayer />
