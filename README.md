@@ -13,11 +13,11 @@ Work in progress:
 - [ ] Further improvements and changes
 
 TODO:
-- [ ] Follow from frontend
+- [ ] Follow from frontend - Alessandro
 - [ ] User search
 - [ ] Notifications
-- [ ] Following section in main page
-- [ ] Confirmation on song edit/delete
-- [ ] Song details
-- [ ] Pictures
-- [ ] Likes
+- [ ] Following section in main page - Alessandro
+- [ ] Confirmation on song edit/delete - Onorio
+- [ ] Song details - Onorio
+- [ ] Pictures - Onorio
+- [ ] Likes - Alessandro
