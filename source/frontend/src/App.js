@@ -100,7 +100,7 @@ function App() {
         />
         <Route path="/register" element={!isLoggedIn ? <Register /> : <Navigate to="/profile" />} />
         <Route path="/profile" element={isLoggedIn ? <Profile user={currentUser} /> : <Navigate to="/login" />} />
-        <Route path="/user/:id" element={isLoggedIn ? <UserProfile /> : <Navigate to="/login" />} />
+        <Route path="/user/:id" element={isLoggedIn ? <UserProfile currentUser={currentUser}/> : <Navigate to="/login" />} />
         <Route 
           path="/edit-profile" 
           element={isLoggedIn ? <EditProfile user={currentUser} onUserUpdate={handleUserUpdate} /> : <Navigate to="/login" />} 
