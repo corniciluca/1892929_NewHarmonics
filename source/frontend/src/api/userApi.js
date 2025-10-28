@@ -36,3 +36,43 @@ export const deleteUser = (userId) => {
         method: 'DELETE',
     });
 };
+
+/**
+ * Ottiene la lista degli artisti seguiti dall'utente specificato.
+ * Corrisponde a GET /users/{id}/followed.
+ * @param {number | string} userId - L'ID dell'utente (follower).
+ * @returns {Promise<Array<any>>} - Array di oggetti utente (artisti).
+ */
+export const getFollowedArtists = (userId) => {
+    // This is correct as it fetches data about *another* user's following list
+    return apiRequest(`/users/${userId}/followed`);
+};
+
+
+/**
+ * Aggiunge un artista alla lista dei seguiti dell'utente loggato.
+ * Corrisponde al percorso corretto: POST /users/follow/{artistId}.
+ * NON passa il followerId nel path, lo ottiene dal JWT/X-User-Id header.
+ * @param {number | string} artistId - L'ID dell'artista da seguire.
+ * @returns {Promise<void>}
+ */
+export const followArtist = (artistId) => {
+    // CHIAMATA CORRETTA: POST /users/follow/{artistId}
+    return apiRequest(`/users/follow/${artistId}`, {
+        method: 'POST',
+    });
+};
+
+/**
+ * Rimuove un artista dalla lista dei seguiti dell'utente loggato.
+ * Corrisponde al percorso corretto: DELETE /users/unfollow/{artistId}.
+ * NON passa il followerId nel path, lo ottiene dal JWT/X-User-Id header.
+ * @param {number | string} artistId - L'ID dell'artista da smettere di seguire.
+ * @returns {Promise<void>}
+ */
+export const unfollowArtist = (artistId) => {
+    // CHIAMATA CORRETTA: DELETE /users/unfollow/{artistId}
+    return apiRequest(`/users/unfollow/${artistId}`, {
+        method: 'DELETE',
+    });
+};

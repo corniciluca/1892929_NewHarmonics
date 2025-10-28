@@ -4,14 +4,7 @@ import it.uniroma1.user_service.service.FollowService;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import it.uniroma1.user_service.assembler.UserModelAssembler;
 import it.uniroma1.user_service.exceptions.UserNotFoundException;
 import it.uniroma1.user_service.model.UserEntity;
@@ -79,24 +72,58 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    // Returns all the users followed by user {id}
+    // 1. Endpoint to get followed artists for the CURRENT user
+    // The FeedService is calling this endpoint via the gateway, but it needs to include the X-User-Id header for the gateway to validate the request.
     @GetMapping("/{id}/followed")
-    public ResponseEntity<Set<UserEntity>> getFollowedArtists(@PathVariable("id") Long id) {
+    public ResponseEntity<Set<UserEntity>> getFollowedArtists(
+            @PathVariable("id") Long id,
+            @RequestHeader("X-User-Id") String headerUserId // Add the header to check
+    ) {
+        if (!String.valueOf(id).equals(headerUserId)) {
+            // 🚨 Security Check: Ensure path ID matches authenticated user ID
+            return ResponseEntity.status(403).build();
+        }
+
         Set<UserEntity> followed = followService.getFollowedArtists(id);
         return ResponseEntity.ok(followed);
     }
 
-    // Adds user {artistId} to the following list of user {id}
-    @PostMapping("/{id}/follow/{artistId}")
-    public ResponseEntity<Void> followArtist(@PathVariable Long id, @PathVariable Long artistId) {
-        followService.followArtist(id, artistId);
+    // 2. Endpoint to follow an artist (only the current user)
+    @PostMapping("/follow/{artistId}") // Note: Removed {id} from path
+    public ResponseEntity<Void> followArtist(
+            @RequestHeader("X-User-Id") String followerId,
+            @PathVariable Long artistId
+    ) {
+        Long currentUserId;
+        try {
+            currentUserId = Long.parseLong(followerId);
+        } catch (NumberFormatException e) {
+            return ResponseEntity.status(401).build(); // Invalid ID header
+        }
+
+        // Optional: Add logic here to check if the current user is a LISTENER
+        // if (!userService.getUserRole(currentUserId).equals(Role.LISTENER)) {
+        //     return ResponseEntity.status(403).body("Only LISTENERs can follow.");
+        // }
+
+        followService.followArtist(currentUserId, artistId);
         return ResponseEntity.ok().build();
     }
 
-    // Removes user {artistId} from the following list of user {id}
-    @DeleteMapping("/{id}/unfollow/{artistId}")
-    public ResponseEntity<Void> unfollowArtist(@PathVariable Long id, @PathVariable Long artistId) {
-        followService.unfollowArtist(id, artistId);
+    // 3. Endpoint to unfollow an artist (only the current user)
+    @DeleteMapping("/unfollow/{artistId}") // Note: Removed {id} from path
+    public ResponseEntity<Void> unfollowArtist(
+            @RequestHeader("X-User-Id") String followerId,
+            @PathVariable Long artistId
+    ) {
+        Long currentUserId;
+        try {
+            currentUserId = Long.parseLong(followerId);
+        } catch (NumberFormatException e) {
+            return ResponseEntity.status(401).build();
+        }
+
+        followService.unfollowArtist(currentUserId, artistId);
         return ResponseEntity.ok().build();
     }
 

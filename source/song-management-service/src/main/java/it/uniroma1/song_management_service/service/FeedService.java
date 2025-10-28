@@ -20,7 +20,7 @@ public class FeedService {
     private final WebClient webClient;
     private static final Logger log = LoggerFactory.getLogger(FeedService.class);
 
-    private final String userServiceUrl = "http://api-gateway:9000/users"; // gateway routes to user service
+    private final String userServiceUrl = "http://user-service:8080/users"; // gateway routes to user service
 
     public FeedService(SongRepository songRepository, WebClient webClient) {
         this.songRepository = songRepository;
@@ -34,6 +34,7 @@ public class FeedService {
             // Call the User Service through the API Gateway
             followedArtistIds = ((List<?>) webClient.get()
                     .uri(userServiceUrl + "/{id}/followed", userId)
+                    .header("X-User-Id", userId.toString())
                     .retrieve()
                     .bodyToMono(List.class)
                     .block())
