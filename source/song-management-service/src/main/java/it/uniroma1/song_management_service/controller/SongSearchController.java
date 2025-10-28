@@ -31,10 +31,14 @@ public class SongSearchController {
                 song.getId(),
                 song.getTitle(),
                 song.getArtist(),
+                // Assicurati che il tuo modello 'Song' abbia questo metodo
+                song.getArtistId(), // <-- PASSA IL NUOVO ID QUI
                 song.getAlbum(),
                 song.getGenre(),
                 song.getPlayCount(),
-                song.getUploadDate().atZone(ZoneId.systemDefault()).toOffsetDateTime(),
+                (song.getUploadDate() != null) 
+                    ? song.getUploadDate().atZone(ZoneId.systemDefault()).toOffsetDateTime() 
+                    : null,
                 song.getDurationSeconds()
             ))
             .collect(Collectors.toList());

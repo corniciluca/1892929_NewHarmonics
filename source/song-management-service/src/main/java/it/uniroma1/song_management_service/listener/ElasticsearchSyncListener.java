@@ -26,6 +26,7 @@ public class ElasticsearchSyncListener {
             song.getId(),
             song.getTitle(),
             song.getArtist(),
+            song.getArtistId(),
             song.getAlbum(),
             song.getGenre(),
             0L, // Initial play count

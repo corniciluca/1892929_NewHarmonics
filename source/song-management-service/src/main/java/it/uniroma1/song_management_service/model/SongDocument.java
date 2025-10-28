@@ -18,6 +18,9 @@ public class SongDocument {
     
     @Field(type = FieldType.Text, analyzer = "standard")
     private String artist;
+
+    @Field(type = FieldType.Keyword) // Keyword è ottimo per gli ID
+    private Long artistId;
     
     @Field(type = FieldType.Text, analyzer = "standard")
     private String album;
@@ -37,12 +40,13 @@ public class SongDocument {
     // Constructors
     public SongDocument() {}
     
-    public SongDocument(String id, String title, String artist, String album, 
+    public SongDocument(String id, String title, String artist, Long artistId, String album, 
                        String genre, Long playCount, OffsetDateTime uploadDate, 
                        Integer durationSeconds) {
         this.id = id;
         this.title = title;
         this.artist = artist;
+        this.artistId = artistId;
         this.album = album;
         this.genre = genre;
         this.playCount = playCount;
@@ -73,6 +77,14 @@ public class SongDocument {
     
     public void setArtist(String artist) {
         this.artist = artist;
+    }
+
+    public Long getArtistId() {
+        return artistId;
+    }
+
+    public void setArtistId(Long artistId) {
+        this.artistId = artistId;
     }
     
     public String getAlbum() {

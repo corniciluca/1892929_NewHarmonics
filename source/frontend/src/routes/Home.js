@@ -8,7 +8,7 @@ export default function Home({ currentUser }) {
   const theme = useTheme();
   const sectionStyle = color => ({
     background: `linear-gradient(135deg, ${color}22 0%, ${color}44 100%)`,
-    borderRadius: 32, boxShadow: theme.shadows[1], padding: "32px 20px 24px 20px",
+    borderRadius: 12, boxShadow: theme.shadows[1], padding: "32px 20px 24px 20px",
     marginBottom: theme.spacing(4), border: `1.5px solid ${color}`,
   });
 
