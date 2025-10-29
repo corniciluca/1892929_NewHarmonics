@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import {
-  Container, Typography, TextField, Box, Button, Paper, Grid, IconButton
+  Container, Typography, TextField, Box, Button, Paper, Grid, IconButton,
+  // 1. Import Dialog components
+  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
 } from "@mui/material";
 import ImageIcon from "@mui/icons-material/Image";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
@@ -11,30 +13,39 @@ export default function SongEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
   
-  // 1. State updated to match Upload.js
   const [title, setTitle] = useState("");
-  const [album, setAlbum] = useState(""); // Added album
+  const [album, setAlbum] = useState("");
   const [genre, setGenre] = useState("");
-  // const [featured, setFeatured] = useState(""); // Removed featured
-  const [file, setFile] = useState(null); // Added for UI consistency
+  const [file, setFile] = useState(null);
+
+  // 2. Add state for the dialog
+  const [openDialog, setOpenDialog] = useState(false);
 
   useEffect(() => {
     getSong(id).then(song => {
-      // 2. Populate all fields from the song data
       setTitle(song.title);
       setGenre(song.genre);
-      setAlbum(song.album); // Make sure your song object has 'album'
+      setAlbum(song.album);
     });
   }, [id]);
 
-  const handleUpdate = async e => {
-    e.preventDefault();
-    
-    // 3. Send the updated text fields as JSON
-    //    File updating requires a backend change to accept FormData
-    const song = { title, genre, album }; // Updated object
+  // 3. This function now *opens* the dialog
+  const handleSubmit = (e) => {
+    e.preventDefault(); // Prevent form from submitting immediately
+    setOpenDialog(true); // Open the confirmation dialog
+  };
+
+  // 4. This function closes the dialog
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
+  // 5. This new function contains the *actual* update logic
+  const handleConfirmUpdate = async () => {
+    const song = { title, genre, album };
     
     await updateSong(id, song);
+    handleCloseDialog(); // Close the dialog
     navigate("/manage-songs");
   };
 
@@ -47,8 +58,8 @@ export default function SongEdit() {
         <Paper elevation={6} sx={{
           p:4, borderRadius:6, minWidth:350, maxWidth:420, width:'100%'
         }}>
-          <form onSubmit={handleUpdate}>
-            {/* 4. Form fields now match Upload.js */}
+          {/* 6. The form's onSubmit now calls handleSubmit */}
+          <form onSubmit={handleSubmit}>
             <TextField label="Title" fullWidth margin="normal"
               value={title} onChange={e => setTitle(e.target.value)} required />
             <TextField label="Album" fullWidth margin="normal"
@@ -56,7 +67,6 @@ export default function SongEdit() {
             <TextField label="Genre" fullWidth margin="normal"
               value={genre} onChange={e => setGenre(e.target.value)} required />
             
-            {/* 5. File input UI now matches Upload.js */}
             <Grid container spacing={2} sx={{mt:2, mb:2}} justifyContent="center">
               <Grid item xs={12} sx={{ display:'flex', flexDirection:'column', alignItems:'center' }}>
                 <Typography fontWeight={600} mb={1}>Song File / Art</Typography>
@@ -66,7 +76,6 @@ export default function SongEdit() {
                 </IconButton>
                 {file && <Typography variant="caption">{file.name}</Typography>}
                 
-                {/* Optional: Add a note that file replacing isn't supported */}
                 {!file && (
                   <Typography variant="caption" sx={{mt: 1, fontStyle: 'italic', color: 'text.secondary'}}>
                     Replacing files is not supported yet.
@@ -82,7 +91,6 @@ export default function SongEdit() {
               </Button>
               <Button variant="contained" color="primary"
                 sx={{ borderRadius:3, minWidth:110 }} type="submit"
-                // 6. Update disabled check
                 disabled={!title || !genre || !album}>
                 Update
               </Button>
@@ -90,6 +98,27 @@ export default function SongEdit() {
           </form>
         </Paper>
       </Box>
+
+      {/* 7. Add the Dialog component */}
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+      >
+        <DialogTitle>Confirm Update</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to save these changes?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="inherit">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmUpdate} color="primary" autoFocus>
+            Save Changes
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }
