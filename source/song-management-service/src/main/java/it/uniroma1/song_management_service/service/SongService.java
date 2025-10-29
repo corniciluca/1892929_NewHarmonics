@@ -77,12 +77,22 @@ public class SongService {
     }
 
     public byte[] downloadSong(String id) throws IOException {
+        // 1. Trova la canzone nel database principale
         Song song = songRepository.findById(id).orElseThrow();
-         // Increment play count in Elasticsearch
+        
+        long newPlayCount = song.getPlayCount() + 1;
+
+        // 2. Aggiorna il conteggio in Elasticsearch
         searchRepository.findById(id).ifPresent(doc -> {
-            doc.setPlayCount(doc.getPlayCount() + 1);
+            doc.setPlayCount(newPlayCount); // Usa il nuovo conteggio
             searchRepository.save(doc);
         });
+
+        // 3. --- LA CORREZIONE ---
+        //    Aggiorna il conteggio anche nel database principale
+        song.setPlayCount(newPlayCount);
+        songRepository.save(song); // <-- Salva l'aggiornamento
+
         return Files.readAllBytes(Paths.get(song.getFileUrl()));
     }
 
