@@ -29,6 +29,7 @@ public class ElasticsearchSyncListener {
             song.getArtistId(),
             song.getAlbum(),
             song.getGenre(),
+            song.getCoverImageUrl(),
             0L, // Initial play count
             song.getUploadDate().atZone(ZoneId.systemDefault()).toOffsetDateTime(),
             song.getDurationSeconds(),

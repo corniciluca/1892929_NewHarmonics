@@ -11,10 +11,14 @@ export default function Upload({ currentUser }) {
   const [title, setTitle] = useState("");
   const [album, setAlbum] = useState("");
   const [genre, setGenre] = useState("");
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState(null); // This is the audio file
+  
+  // 1. Add new state for the cover image
+  const [coverImageFile, setCoverImageFile] = useState(null); 
+  
   const navigate = useNavigate();
 
-const handleUpload = async e => {
+  const handleUpload = async e => {
     e.preventDefault();
     if (!currentUser) {
       alert("Error: Not logged in.");
@@ -22,18 +26,18 @@ const handleUpload = async e => {
     }
     
     try {
-      // 2. Get both artist name and ID from the prop
       const artistName = currentUser.username;
       const artistId = currentUser.id;
       
-      // 3. Pass all 6 parameters to the upload function
+      // 2. Pass all parameters, including the new coverImageFile
       await uploadSong({ 
         file, 
         title, 
         artist: artistName, 
-        artistId: artistId, // Add the ID
+        artistId: artistId,
         album, 
-        genre 
+        genre,
+        coverImageFile // <-- Add the new cover image file
       });
       
       alert("Song uploaded!");
@@ -56,15 +60,32 @@ const handleUpload = async e => {
             <TextField label="Title" fullWidth margin="normal" value={title} onChange={e => setTitle(e.target.value)} required />
             <TextField label="Album" fullWidth margin="normal" value={album} onChange={e => setAlbum(e.target.value)} required/>
             <TextField label="Genre" fullWidth margin="normal" value={genre} onChange={e => setGenre(e.target.value)} required/>
-            <Grid container spacing={2} sx={{mt:2, mb:2}} justifyContent="center">
-              <Grid item xs={12} sx={{ display:'flex', flexDirection:'column', alignItems:'center' }}>
-                <Typography fontWeight={600} mb={1}>Song File / Art</Typography>
+            
+            {/* 3. Updated Grid for two separate file inputs */}
+            <Grid container spacing={2} sx={{mt:2, mb:2}} justifyContent="space-around">
+              
+              {/* Song File Input */}
+              <Grid item xs={6} sx={{ display:'flex', flexDirection:'column', alignItems:'center' }}>
+                <Typography fontWeight={600} mb={1}>Song File</Typography>
                 <IconButton component="label" sx={{ bgcolor: "#ede7f6", width:72, height:72, borderRadius:3, boxShadow:2 }}>
-                  {file ? <MusicNoteIcon sx={{ fontSize:48, color:"#00897b" }}/> : <ImageIcon sx={{ fontSize:48, color:"#7e57c2" }}/>}
-                  <input type="file" accept="image/*,audio/*" hidden onChange={e => setFile(e.target.files[0])} />
+                  {file ? <MusicNoteIcon sx={{ fontSize:48, color:"#00897b" }}/> : <MusicNoteIcon sx={{ fontSize:48, color:"#7e57c2" }}/>}
+                  {/* Accept audio files */}
+                  <input type="file" accept="audio/*" hidden onChange={e => setFile(e.target.files[0])} />
                 </IconButton>
-                {file && <Typography variant="caption">{file.name}</Typography>}
+                {file && <Typography variant="caption" noWrap>{file.name}</Typography>}
               </Grid>
+
+              {/* Cover Art Input */}
+              <Grid item xs={6} sx={{ display:'flex', flexDirection:'column', alignItems:'center' }}>
+                <Typography fontWeight={600} mb={1}>Cover Art</Typography>
+                <IconButton component="label" sx={{ bgcolor: "#ede7f6", width:72, height:72, borderRadius:3, boxShadow:2 }}>
+                  {coverImageFile ? <ImageIcon sx={{ fontSize:48, color:"#00897b" }}/> : <ImageIcon sx={{ fontSize:48, color:"#7e57c2" }}/>}
+                  {/* Accept image files */}
+                  <input type="file" accept="image/*" hidden onChange={e => setCoverImageFile(e.target.files[0])} />
+                </IconButton>
+                {coverImageFile && <Typography variant="caption" noWrap>{coverImageFile.name}</Typography>}
+              </Grid>
+
             </Grid>
             <Box sx={{ display:'flex', justifyContent:'center', gap:2, mt:2 }}>
               <Button variant="outlined" color="inherit"
@@ -73,7 +94,8 @@ const handleUpload = async e => {
               </Button>
               <Button variant="contained" color="primary"
                 sx={{ borderRadius:3, minWidth:110 }} type="submit"
-                disabled={!title || !file || !album || !genre}>
+                // 4. Update disabled check to include the coverImageFile
+                disabled={!title || !file || !album || !genre || !coverImageFile}>
                 Upload
               </Button>
             </Box>

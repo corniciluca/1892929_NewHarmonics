@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,6 +39,33 @@ public class SongController {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(data);
     }
+
+    @GetMapping("/{id}/cover")
+    public ResponseEntity<byte[]> downloadCoverImage(@PathVariable String id) throws IOException {
+        Song song = songService.getSongById(id);
+        
+        if (song.getCoverImageUrl() == null || song.getCoverImageUrl().isBlank()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        Path imagePath = Paths.get(song.getCoverImageUrl());
+        
+        if (!Files.exists(imagePath)) {
+             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        byte[] data = Files.readAllBytes(imagePath);
+        
+        // Automatically determine content type (e.g., image/jpeg, image/png)
+        String contentType = Files.probeContentType(imagePath);
+        if (contentType == null) {
+            contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .body(data);
+    }
     
     @GetMapping("/{id}")
     public ResponseEntity<Song> getSongById(@PathVariable String id) {
@@ -49,6 +79,7 @@ public class SongController {
     @PostMapping("/upload")
     public ResponseEntity<?> uploadSong(
             @RequestParam("file") MultipartFile file,
+            @RequestParam("coverImage") MultipartFile coverImage,
             @RequestParam("title") String title,
             @RequestParam("artist") String artist,
             @RequestParam("artistId") Long artistId,
@@ -63,7 +94,7 @@ public class SongController {
         }
 
         try {
-            Song song = songService.uploadSong(file, title, artist, artistId, album, genre);
+            Song song = songService.uploadSong(file, coverImage, title, artist, artistId, album, genre);
             return ResponseEntity.ok(song);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

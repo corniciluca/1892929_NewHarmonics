@@ -21,7 +21,7 @@ public class SongDocument {
     @Field(type = FieldType.Text, analyzer = "standard")
     private String artist;
 
-    @Field(type = FieldType.Keyword) // Keyword è ottimo per gli ID
+    @Field(type = FieldType.Keyword) 
     private Long artistId;
     
     @Field(type = FieldType.Text, analyzer = "standard")
@@ -29,6 +29,9 @@ public class SongDocument {
     
     @Field(type = FieldType.Keyword)
     private String genre;
+
+    @Field(type = FieldType.Keyword) 
+    private String coverImageUrl;
     
     @Field(type = FieldType.Long)
     private Long playCount;
@@ -46,7 +49,7 @@ public class SongDocument {
     public SongDocument() {}
     
     public SongDocument(String id, String title, String artist, Long artistId, String album, 
-                       String genre, Long playCount, OffsetDateTime uploadDate, 
+                       String genre, String coverImageUrl, Long playCount, OffsetDateTime uploadDate, 
                        Integer durationSeconds, Set<Long> likedBy) {
         this.id = id;
         this.title = title;
@@ -54,6 +57,7 @@ public class SongDocument {
         this.artistId = artistId;
         this.album = album;
         this.genre = genre;
+        this.coverImageUrl = coverImageUrl;
         this.playCount = playCount;
         this.uploadDate = uploadDate;
         this.durationSeconds = durationSeconds;
@@ -107,6 +111,14 @@ public class SongDocument {
     
     public void setGenre(String genre) {
         this.genre = genre;
+    }
+
+    public String getCoverImageUrl() {
+        return coverImageUrl;
+    }
+
+    public void setCoverImageUrl(String coverImageUrl) {
+        this.coverImageUrl = coverImageUrl;
     }
     
     public Long getPlayCount() {

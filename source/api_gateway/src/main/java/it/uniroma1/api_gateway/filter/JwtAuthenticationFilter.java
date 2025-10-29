@@ -103,6 +103,7 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
             if (path.equals("/songs") || 
                 path.matches("/songs/[^/]+") || 
                 path.matches("/songs/[^/]+/download") ||
+                path.matches("/songs/[^/]+/cover") ||
                 path.startsWith("/songs/artist/")||
                 path.startsWith("/songs/search/")|| 
                 path.startsWith("/songs/trending/")||

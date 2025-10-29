@@ -21,36 +21,59 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class SongService {
 
     private final SongRepository songRepository;
-    private final Path uploadDir;
+    private final Path musicUploadDir;
+    private final Path coverUploadDir;
     private final SongSearchRepository searchRepository;
     private final RabbitTemplate rabbitTemplate;
     private static final Logger log = LoggerFactory.getLogger(SongService.class);
 
-    public SongService(SongRepository songRepository, SongSearchRepository searchRepository, RabbitTemplate rabbitTemplate, @Value("${app.music.storage-dir:/app/music}") String uploadDirPath) {
+    public SongService(SongRepository songRepository, SongSearchRepository searchRepository, RabbitTemplate rabbitTemplate, @Value("${app.music.storage-dir:/app/music}") String uploadDirPath) throws IOException {
         this.songRepository = songRepository;
         this.searchRepository = searchRepository;
         this.rabbitTemplate = rabbitTemplate;
-        this.uploadDir = Paths.get(uploadDirPath);
+        
+        // Base directory
+        Path baseDir = Paths.get(uploadDirPath);
+        
+        // Directory for music files
+        this.musicUploadDir = baseDir.resolve("audio");
+        
+        // Directory for cover images
+        this.coverUploadDir = baseDir.resolve("covers");
+
+        // Create directories if they don't exist
+        if (!Files.exists(musicUploadDir)) {
+            Files.createDirectories(musicUploadDir);
+        }
+        if (!Files.exists(coverUploadDir)) {
+            Files.createDirectories(coverUploadDir);
+        }
     }
 
     public List<Song> getAllSongs() {
         return songRepository.findAll();
     }
 
-    public Song uploadSong(MultipartFile file, String title, String artist, Long artistId, String album, String genre) throws IOException {
+    public Song uploadSong(MultipartFile audioFile, MultipartFile coverImageFile, String title, String artist, Long artistId, String album, String genre) throws IOException {
         // Save file locally
     
-        // Docker volume is already mounted, just check if writable
-        if (!Files.exists(uploadDir)) {
-            Files.createDirectories(uploadDir);
-        }
-        String filePath = uploadDir + "/" + file.getOriginalFilename();
-        Files.copy(file.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
+        // --- 4. SAVE THE AUDIO FILE ---
+        // Create a unique filename for audio to prevent overwrites
+        String audioFileName = UUID.randomUUID().toString() + "_" + audioFile.getOriginalFilename();
+        String audioFilePath = musicUploadDir + "/" + audioFileName;
+        Files.copy(audioFile.getInputStream(), Paths.get(audioFilePath), StandardCopyOption.REPLACE_EXISTING);
+
+        // --- 5. SAVE THE COVER IMAGE FILE ---
+        // Create a unique filename for the cover
+        String coverFileName = UUID.randomUUID().toString() + "_" + coverImageFile.getOriginalFilename();
+        String coverFilePath = coverUploadDir + "/" + coverFileName;
+        Files.copy(coverImageFile.getInputStream(), Paths.get(coverFilePath), StandardCopyOption.REPLACE_EXISTING);
 
         Song song = new Song();
         song.setTitle(title);
@@ -58,11 +81,11 @@ public class SongService {
         song.setArtistId(artistId);
         song.setAlbum(album);
         song.setGenre(genre);
-        song.setFileUrl(filePath);
+        song.setFileUrl(audioFilePath); // Path to the audio
+        song.setCoverImageUrl(coverFilePath); // <-- 6. SET THE COVER IMAGE PATH
         song.setPlayCount(0L);
         song.setUploadDate(LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
-        song.setDurationSeconds(0); // You can calculate this from the audio file if needed
-
+        song.setDurationSeconds(0); // You can calculate this later if needed
         Song savedSong = songRepository.save(song);
         indexSongInElasticsearch(savedSong);
 
@@ -98,7 +121,23 @@ public class SongService {
 
     public void deleteSong(String id) {
         Song song = songRepository.findById(id).orElseThrow();
-        new File(song.getFileUrl()).delete();
+        
+        // Delete audio file
+        try {
+            Files.deleteIfExists(Paths.get(song.getFileUrl()));
+        } catch (IOException e) {
+            log.error("Failed to delete audio file: " + song.getFileUrl(), e);
+        }
+        
+        // Delete cover image file
+        if (song.getCoverImageUrl() != null && !song.getCoverImageUrl().isBlank()) {
+            try {
+                Files.deleteIfExists(Paths.get(song.getCoverImageUrl()));
+            } catch (IOException e) {
+                log.error("Failed to delete cover image: " + song.getCoverImageUrl(), e);
+            }
+        }
+        
         songRepository.deleteById(id);
         // Delete from Elasticsearch
         searchRepository.deleteById(id);
@@ -138,6 +177,7 @@ public class SongService {
         doc.setArtistId(song.getArtistId());
         doc.setAlbum(song.getAlbum());
         doc.setGenre(song.getGenre());
+        doc.setCoverImageUrl(song.getCoverImageUrl());
         doc.setPlayCount(song.getPlayCount());
         // Convert LocalDateTime to OffsetDateTime with system default zone
         LocalDateTime ldt = song.getUploadDate() != null ? song.getUploadDate() : LocalDateTime.now();

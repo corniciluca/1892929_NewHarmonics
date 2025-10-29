@@ -35,6 +35,7 @@ public class SongSearchController {
                 song.getArtistId(), // <-- PASSA IL NUOVO ID QUI
                 song.getAlbum(),
                 song.getGenre(),
+                song.getCoverImageUrl(),
                 song.getPlayCount(),
                 (song.getUploadDate() != null) 
                     ? song.getUploadDate().atZone(ZoneId.systemDefault()).toOffsetDateTime() 

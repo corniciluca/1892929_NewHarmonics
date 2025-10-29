@@ -1,24 +1,26 @@
 import React, { useContext, useState, useEffect } from "react";
 import { 
   Dialog, DialogContent, Typography, Box, IconButton, DialogTitle, Avatar, Stack, Chip,
-  Button, // 1. Import Button
-  Link    // 2. Import Link from MUI
+  Button,
+  Link
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import AlbumIcon from '@mui/icons-material/Album';
 import CategoryIcon from '@mui/icons-material/Category';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow'; // 3. Import Play Icon
-import { Link as RouterLink } from 'react-router-dom'; // 4. Import RouterLink
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder"; // 2. Import Like icons
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import { Link as RouterLink } from 'react-router-dom';
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 
 import { PlayerContext } from './PlayerContext';
 import { likeSong, unlikeSong } from '../api/songApi';
 
+// 1. Define the gateway URL
+const gateway = process.env.REACT_APP_API_GATEWAY_URL || 'http://localhost:9000';
+
 export default function SongDetailModal() {
-  // 5. Get all necessary functions and data from context
   const { detailSong, closeSongDetail, playSong, currentSong, currentUser } = useContext(PlayerContext);
 
   const isUserLiked = !!currentUser && !!detailSong?.likedBy && detailSong.likedBy.includes(currentUser.id);
@@ -29,21 +31,18 @@ export default function SongDetailModal() {
       setIsLiked(newIsUserLiked);
     }, [detailSong, currentUser]);
 
-  // Check if this song is the one currently playing
   const isCurrentlyPlaying = currentSong?.id === detailSong?.id;
-
-  // Get the visuals count (logic from SongCard.js)
   const visuals = detailSong?.playCount || detailSong?.play_count || detailSong?.views || detailSong?.visuals || 0;
-  
-  // 6. Get the artistId (logic from SongCard.js)
   const artistId = detailSong?.artistId || detailSong?.userId;
 
-  // Handler for the play button
+  // 2. Construct the cover image URL
+  const coverImageUrl = detailSong?.coverImageUrl ? `${gateway}/songs/${detailSong.id}/cover` : null;
+
   const handlePlay = () => {
     if (detailSong) {
-      playSong(detailSong); // Tell the player to play this song
+      playSong(detailSong);
     }
-    closeSongDetail(); // Close the modal
+    closeSongDetail();
   };
 
   const handleLikeToggle = async () => {
@@ -51,38 +50,32 @@ export default function SongDetailModal() {
           alert("You must be logged in to like a song.");
           return;
       }
-
-      if (!detailSong) return; // Safety check
-
+      if (!detailSong) return;
       try {
           if (isLiked) {
-              // UNLIKE action
               await unlikeSong(detailSong.id);
           } else {
-              // LIKE action
               await likeSong(detailSong.id);
           }
-          setIsLiked(l => !l); // Toggle the heart icon
+          setIsLiked(l => !l);
       } catch (error) {
           console.error("Error toggling like status:", error);
           alert(`Failed to update like status. Please try again.`);
       }
     };
 
-  // If no song is selected, the modal is closed (render nothing)
   if (!detailSong) {
     return null;
   }
 
   return (
     <Dialog 
-      open={true} // Open is controlled by detailSong not being null
-      onClose={closeSongDetail} // Function to close
+      open={true}
+      onClose={closeSongDetail}
       maxWidth="xs"
       fullWidth
     >
-      <DialogTitle sx={{ pr: 6, minHeight: 64 }}> {/* Added minHeight for spacing */}
-        {/* Close Button */}
+      <DialogTitle sx={{ pr: 6, minHeight: 64 }}>
         <IconButton
           aria-label="close"
           onClick={closeSongDetail}
@@ -92,18 +85,35 @@ export default function SongDetailModal() {
         </IconButton>
       </DialogTitle>
       
-      <DialogContent sx={{ textAlign: 'center', pt: 0 }}> {/* Removed padding-top */}
-        {/* Icon */}
-        <Avatar sx={{ width: 120, height: 120, margin: 'auto', mb: 2, bgcolor: 'primary.light' }}>
-          <MusicNoteIcon sx={{ fontSize: 70, color: 'primary.dark' }} />
-        </Avatar>
+      <DialogContent sx={{ textAlign: 'center', pt: 0 }}>
+        
+        {/* 3. Replaced Avatar with this Box for the image */}
+        <Box sx={{ 
+          width: 160, height: 160, 
+          margin: 'auto', mb: 2, 
+          borderRadius: 4,
+          overflow: 'hidden',
+          bgcolor: 'primary.light',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: 3
+        }}>
+          {coverImageUrl ? (
+            <img 
+              src={coverImageUrl} 
+              alt={detailSong.title} 
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+            />
+          ) : (
+            <MusicNoteIcon sx={{ fontSize: 90, color: 'primary.dark' }} />
+          )}
+        </Box>
 
-        {/* Title */}
         <Typography variant="h4" fontWeight={600} noWrap>
           {detailSong.title}
         </Typography>
 
-        {/* 7. Artist Link (Conditionally rendered) */}
         <Typography variant="h6" color="text.secondary" gutterBottom>
           {artistId ? (
             <Link 
@@ -112,21 +122,17 @@ export default function SongDetailModal() {
               sx={{ 
                 color: 'text.secondary', 
                 textDecoration: 'none',
-                '&:hover': {
-                   textDecoration: 'underline',
-                   color: 'primary.main'
-                }
+                '&:hover': { textDecoration: 'underline', color: 'primary.main' }
               }}
-              onClick={closeSongDetail} // Close modal when clicking artist
+              onClick={closeSongDetail}
             >
               {detailSong.artist}
             </Link>
           ) : (
-            detailSong.artist // Just show name if no ID
+            detailSong.artist
           )}
         </Typography>
         
-        {/* 4. Group Play and Like buttons together */}
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 1, mt: 2, mb: 3 }}>
           <Button
             variant="contained"
@@ -138,7 +144,6 @@ export default function SongDetailModal() {
             {isCurrentlyPlaying ? "Playing" : "Play"}
           </Button>
 
-          {/* 5. Add the Like Button */}
           <IconButton
             aria-label="like song"
             onClick={handleLikeToggle}
@@ -151,9 +156,7 @@ export default function SongDetailModal() {
           </IconButton>
         </Box>
 
-        {/* Details Stack */}
         <Stack spacing={1.5} sx={{ alignItems: 'flex-start', pl: { xs: 1, sm: 4 }, mb: 2 }}>
-          {/* Album */}
           {detailSong.album && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
               <AlbumIcon color="action" />
@@ -163,7 +166,6 @@ export default function SongDetailModal() {
             </Box>
           )}
 
-          {/* Genre */}
           {detailSong.genre && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
               <CategoryIcon color="action" />
@@ -173,7 +175,6 @@ export default function SongDetailModal() {
             </Box>
           )}
           
-          {/* Play Count */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             <VisibilityIcon color="action" />
             <Typography variant="body1">

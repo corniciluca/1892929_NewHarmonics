@@ -19,6 +19,7 @@ public class Song {
     private String album;
     private String genre;
     private String fileUrl; // URL or path to file
+    private String coverImageUrl;
     private Long playCount;
     private Integer durationSeconds;
     private LocalDateTime uploadDate;

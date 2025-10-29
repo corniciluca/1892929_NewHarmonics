@@ -17,9 +17,10 @@ export async function getSong(id) {
   return apiRequest(`/songs/${id}`);
 }
 
-export async function uploadSong({ file, title, artist, artistId, album, genre }) {
+export async function uploadSong({ file, title, artist, artistId, album, genre, coverImageFile }) {
   const formData = new FormData();
   if (file) formData.append("file", file);
+  if (coverImageFile) formData.append("coverImage", coverImageFile); // 2. Add the new image file
   formData.append("title", title);
   formData.append("artist", artist);
   formData.append("artistId", artistId);
