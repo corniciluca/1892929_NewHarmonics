@@ -125,6 +125,7 @@ public class SongService {
         doc.setId(song.getId());
         doc.setTitle(song.getTitle());
         doc.setArtist(song.getArtist());
+        doc.setArtistId(song.getArtistId());
         doc.setAlbum(song.getAlbum());
         doc.setGenre(song.getGenre());
         doc.setPlayCount(0L);
