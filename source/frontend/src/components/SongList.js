@@ -4,7 +4,7 @@ import SongCard from './SongCard';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
-export default function SongList({ songs = [], title, variant = 'grid', itemWidth = 220, height = 320 }) {
+export default function SongList({ songs = [], title, variant = 'grid', itemWidth = 220, height = 320, currentUser }) {
   if (!songs) songs = [];
   const scrollerRef = useRef(null);
 
@@ -43,7 +43,7 @@ export default function SongList({ songs = [], title, variant = 'grid', itemWidt
             >
               {songs.map((song) => (
                 <Box key={song.id || song._id || `${song.title}-${song.artist}`} sx={{ minWidth: itemWidth, flex: '0 0 auto' }}>
-                  <SongCard song={song} />
+                  <SongCard song={song} currentUser={currentUser} />
                 </Box>
               ))}
             </Box>
@@ -64,7 +64,7 @@ export default function SongList({ songs = [], title, variant = 'grid', itemWidt
         <Grid container spacing={3}>
           {songs.map((song) => (
             <Grid item xs={12} sm={6} md={3} lg={2.4} key={song.id || song._id || `${song.title}-${song.artist}`}>
-              <SongCard song={song} />
+              <SongCard song={song} currentUser={currentUser} />
             </Grid>
           ))}
         </Grid>

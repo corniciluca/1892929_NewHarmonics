@@ -137,4 +137,78 @@ public class SongController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(songsByArtist);
     }
+
+    /**
+     * Endpoint to like a specific song.
+     * Corresponds to POST /songs/{id}/like
+     * The liking user is identified by the X-User-Id header.
+     */
+    @PostMapping("/{id}/like")
+    public ResponseEntity<Map<String, String>> likeSong(
+            @PathVariable String id,
+            @RequestHeader("X-User-Id") String userId
+    ) {
+        Long currentUserId;
+        try {
+            currentUserId = Long.parseLong(userId);
+        } catch (NumberFormatException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid User ID format"));
+        }
+
+        try {
+            songService.likeSong(id, currentUserId);
+            return ResponseEntity.ok(Map.of("message", "Song liked successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * Endpoint to unlike a specific song.
+     * Corresponds to DELETE /songs/{id}/like
+     * The unliking user is identified by the X-User-Id header.
+     */
+    @DeleteMapping("/{id}/like")
+    public ResponseEntity<Map<String, String>> unlikeSong(
+            @PathVariable String id,
+            @RequestHeader("X-User-Id") String userId
+    ) {
+        Long currentUserId;
+        try {
+            currentUserId = Long.parseLong(userId);
+        } catch (NumberFormatException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid User ID format"));
+        }
+
+        try {
+            songService.unlikeSong(id, currentUserId);
+            return ResponseEntity.ok(Map.of("message", "Song unliked successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * Endpoint to get all songs liked by the current user.
+     * Corresponds to GET /songs/liked
+     * The user is identified by the X-User-Id header.
+     */
+    @GetMapping("/liked")
+    public ResponseEntity<?> getLikedSongs(
+            @RequestHeader("X-User-Id") String userId
+    ) {
+        Long currentUserId;
+        try {
+            currentUserId = Long.parseLong(userId);
+        } catch (NumberFormatException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid User ID format"));
+        }
+
+        try {
+            List<Song> likedSongs = songService.getLikedSongs(currentUserId);
+            return ResponseEntity.ok(likedSongs);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
+        }
+    }
 }

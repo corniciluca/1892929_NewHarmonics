@@ -1,8 +1,9 @@
 import React, { createContext, useRef, useState, useEffect } from 'react';
+import SongDetailModal from './SongDetailModal';
 
 export const PlayerContext = createContext(null);
 
-export function PlayerProvider({ children }) {
+export function PlayerProvider({ children, currentUser }) {
   // Create audio element synchronously so play() can be called within event handlers
   const audioRef = useRef(typeof document !== 'undefined' ? new Audio() : null);
   const [currentSong, setCurrentSong] = useState(null);
@@ -120,7 +121,7 @@ export function PlayerProvider({ children }) {
   return (
     <PlayerContext.Provider value={{
       currentSong, setCurrentSong, isPlaying, playSong, togglePlay,
-      volume, setVolume, progress, duration, seek, detailSong, openSongDetail, closeSongDetail
+      volume, setVolume, progress, duration, seek, detailSong, openSongDetail, closeSongDetail, currentUser
     }}>
       {children}
     </PlayerContext.Provider>

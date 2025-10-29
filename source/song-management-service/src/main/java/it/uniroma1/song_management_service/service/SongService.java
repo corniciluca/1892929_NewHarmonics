@@ -138,16 +138,62 @@ public class SongService {
         doc.setArtistId(song.getArtistId());
         doc.setAlbum(song.getAlbum());
         doc.setGenre(song.getGenre());
-        doc.setPlayCount(0L);
+        doc.setPlayCount(song.getPlayCount());
         // Convert LocalDateTime to OffsetDateTime with system default zone
         LocalDateTime ldt = song.getUploadDate() != null ? song.getUploadDate() : LocalDateTime.now();
         doc.setUploadDate(ldt.atZone(ZoneId.systemDefault()).toOffsetDateTime());
-        doc.setDurationSeconds(0); // You can calculate this from the audio file if needed
+        doc.setPlayCount(song.getPlayCount());
+        doc.setLikedBy(song.getLikedBy());
 
         if(searchRepository.findById(doc.getId()).isPresent()) {
             searchRepository.deleteById(doc.getId());
         }
 
         searchRepository.save(doc);
+    }
+
+    /**
+     * Adds a user's ID to the song's likedBy collection and re-indexes the song.
+     * @param songId The ID of the song to like.
+     * @param userId The ID of the user liking the song.
+     */
+    public void likeSong(String songId, Long userId) {
+        Song song = songRepository.findById(songId)
+                .orElseThrow(() -> new RuntimeException("Song not found with ID: " + songId));
+
+        if (song.getLikedBy().add(userId)) { // .add() returns true if the set was changed
+            songRepository.save(song);
+            indexSongInElasticsearch(song); // Ensure this method re-indexes the new state
+            log.info("User {} liked song {}", userId, songId);
+        } else {
+            log.warn("User {} already liked song {}", userId, songId);
+        }
+    }
+
+    /**
+     * Removes a user's ID from the song's likedBy collection and re-indexes the song.
+     * @param songId The ID of the song to unlike.
+     * @param userId The ID of the user unliking the song.
+     */
+    public void unlikeSong(String songId, Long userId) {
+        Song song = songRepository.findById(songId)
+                .orElseThrow(() -> new RuntimeException("Song not found with ID: " + songId));
+
+        if (song.getLikedBy().remove(userId)) { // .remove() returns true if the set was changed
+            songRepository.save(song);
+            indexSongInElasticsearch(song); // Ensure this method re-indexes the new state
+            log.info("User {} unliked song {}", userId, songId);
+        } else {
+            log.warn("User {} has not liked song {}", userId, songId);
+        }
+    }
+
+    /**
+     * Finds all songs liked by a specific user.
+     * @param userId The ID of the user.
+     * @return A list of songs liked by the user.
+     */
+    public List<Song> getLikedSongs(Long userId) {
+        return songRepository.findByLikedByContains(userId);
     }
 }

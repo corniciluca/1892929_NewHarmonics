@@ -8,15 +8,14 @@ Work in progress:
 - [x] Api Gateway
 - [x] Front-end
 - [x] Improved search system
-- [x] Connect fronted to backend
+- [x] Connect frontend to backend
 - [ ] Upload songs to external service
 - [ ] Further improvements and changes
 
 TODO:
-- [ ] Follow from frontend - Alessandro
-- [ ] User search
+- [x] Follow from frontend - Alessandro
 - [ ] Notifications
-- [ ] Following section in main page - Alessandro
+- [x] Following section in main page - Alessandro
 - [ ] Confirmation on song edit/delete - Onorio
 - [ ] Song details - Onorio
 - [ ] Pictures - Onorio

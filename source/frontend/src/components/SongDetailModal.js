@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { 
   Dialog, DialogContent, Typography, Box, IconButton, DialogTitle, Avatar, Stack, Chip,
   Button, // 1. Import Button
@@ -15,12 +15,19 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder"; // 2. Impor
 import FavoriteIcon from "@mui/icons-material/Favorite";
 
 import { PlayerContext } from './PlayerContext';
+import { likeSong, unlikeSong } from '../api/songApi';
 
 export default function SongDetailModal() {
   // 5. Get all necessary functions and data from context
-  const { detailSong, closeSongDetail, playSong, currentSong } = useContext(PlayerContext);
+  const { detailSong, closeSongDetail, playSong, currentSong, currentUser } = useContext(PlayerContext);
 
-  const [isLiked, setIsLiked] = useState(false);
+  const isUserLiked = !!currentUser && !!detailSong?.likedBy && detailSong.likedBy.includes(currentUser.id);
+  const [isLiked, setIsLiked] = useState(isUserLiked);
+
+  useEffect(() => {
+      const newIsUserLiked = !!currentUser && !!detailSong?.likedBy && detailSong.likedBy.includes(currentUser.id);
+      setIsLiked(newIsUserLiked);
+    }, [detailSong, currentUser]);
 
   // Check if this song is the one currently playing
   const isCurrentlyPlaying = currentSong?.id === detailSong?.id;
@@ -38,6 +45,29 @@ export default function SongDetailModal() {
     }
     closeSongDetail(); // Close the modal
   };
+
+  const handleLikeToggle = async () => {
+      if (!currentUser) {
+          alert("You must be logged in to like a song.");
+          return;
+      }
+
+      if (!detailSong) return; // Safety check
+
+      try {
+          if (isLiked) {
+              // UNLIKE action
+              await unlikeSong(detailSong.id);
+          } else {
+              // LIKE action
+              await likeSong(detailSong.id);
+          }
+          setIsLiked(l => !l); // Toggle the heart icon
+      } catch (error) {
+          console.error("Error toggling like status:", error);
+          alert(`Failed to update like status. Please try again.`);
+      }
+    };
 
   // If no song is selected, the modal is closed (render nothing)
   if (!detailSong) {
@@ -111,7 +141,7 @@ export default function SongDetailModal() {
           {/* 5. Add the Like Button */}
           <IconButton
             aria-label="like song"
-            onClick={() => setIsLiked(!isLiked)}
+            onClick={handleLikeToggle}
             size="large"
           >
             {isLiked ? 

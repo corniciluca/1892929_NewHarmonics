@@ -31,7 +31,8 @@ public class ElasticsearchSyncListener {
             song.getGenre(),
             0L, // Initial play count
             song.getUploadDate().atZone(ZoneId.systemDefault()).toOffsetDateTime(),
-            song.getDurationSeconds()
+            song.getDurationSeconds(),
+            song.getLikedBy()
         );
         
         searchService.indexSong(doc);

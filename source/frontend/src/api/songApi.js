@@ -66,3 +66,36 @@ export async function getRecentSongs() {
 export async function getUserFeed(userId) {
   return apiRequest('/feed');
 }
+
+/**
+ * Likes a specific song.
+ * Corresponds to POST /songs/{songId}/like.
+ * @param {string} songId - The ID of the song to like.
+ * @returns {Promise<void>}
+ */
+export const likeSong = (songId) => {
+    return apiRequest(`/songs/${songId}/like`, {
+        method: 'POST',
+    });
+};
+
+/**
+ * Unlikes a specific song.
+ * Corresponds to DELETE /songs/{songId}/like.
+ * @param {string} songId - The ID of the song to unlike.
+ * @returns {Promise<void>}
+ */
+export const unlikeSong = (songId) => {
+    return apiRequest(`/songs/${songId}/like`, {
+        method: 'DELETE',
+    });
+};
+
+/**
+ * Gets the list of songs liked by the currently authenticated user.
+ * Corresponds to GET /songs/liked. The user is identified via the JWT/X-User-Id header.
+ * @returns {Promise<Array<any>>} - Array of song objects.
+ */
+export const getLikedSongs = () => {
+    return apiRequest('/songs/liked');
+}

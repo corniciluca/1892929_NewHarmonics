@@ -6,6 +6,8 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import java.time.OffsetDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Document(indexName = "songs")
 public class SongDocument {
@@ -36,13 +38,16 @@ public class SongDocument {
     
     @Field(type = FieldType.Integer)
     private Integer durationSeconds;
+
+    @Field(type = FieldType.Long)
+    private Set<Long> likedBy = new HashSet<>();
     
     // Constructors
     public SongDocument() {}
     
     public SongDocument(String id, String title, String artist, Long artistId, String album, 
                        String genre, Long playCount, OffsetDateTime uploadDate, 
-                       Integer durationSeconds) {
+                       Integer durationSeconds, Set<Long> likedBy) {
         this.id = id;
         this.title = title;
         this.artist = artist;
@@ -52,6 +57,7 @@ public class SongDocument {
         this.playCount = playCount;
         this.uploadDate = uploadDate;
         this.durationSeconds = durationSeconds;
+        this.likedBy = likedBy;
     }
     
     // Getters and Setters
@@ -125,5 +131,13 @@ public class SongDocument {
     
     public void setDurationSeconds(Integer durationSeconds) {
         this.durationSeconds = durationSeconds;
+    }
+
+    public Set<Long> getLikedBy() {
+        return likedBy;
+    }
+
+    public void setLikedBy(Set<Long> likedBy) {
+        this.likedBy = likedBy;
     }
 }

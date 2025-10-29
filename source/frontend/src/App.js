@@ -25,6 +25,8 @@ import SongEdit from './routes/SongEdit';
 
 import Feed from './routes/Feed';
 
+import LikedSongs from './routes/LikedSongs';
+
 import { checkLoginStatus, logout } from './api/api';
 import { getUserById } from './api/userApi';
 
@@ -90,7 +92,7 @@ function App() {
   const isArtist = currentUser?.role === 'ARTIST';
 
   return (
-    <PlayerProvider>
+    <PlayerProvider currentUser={currentUser}>
       <Router>
         <Navbar isLoggedIn={isLoggedIn} onLogout={handleLogout} isArtist={isArtist} />
         <Routes>
@@ -142,6 +144,11 @@ function App() {
         <Route
             path="/feed"
             element={isLoggedIn ? <Feed currentUser={currentUser} /> : <Navigate to="/login" />}
+        />
+
+        <Route
+            path="/songs/liked"
+            element={isLoggedIn ? <LikedSongs currentUser={currentUser} /> : <Navigate to="/login" />}
         />
 
         <Route path="*" element={<NotFound />} />

@@ -39,7 +39,8 @@ public class SongSearchController {
                 (song.getUploadDate() != null) 
                     ? song.getUploadDate().atZone(ZoneId.systemDefault()).toOffsetDateTime() 
                     : null,
-                song.getDurationSeconds()
+                song.getDurationSeconds(),
+                song.getLikedBy()
             ))
             .collect(Collectors.toList());
         searchService.indexSongs(docs);

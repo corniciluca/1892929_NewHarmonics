@@ -1,6 +1,8 @@
 package it.uniroma1.song_management_service.model;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -20,6 +22,5 @@ public class Song {
     private Long playCount;
     private Integer durationSeconds;
     private LocalDateTime uploadDate;
-
-
+    private Set<Long> likedBy = new HashSet<>();
 }

@@ -33,7 +33,7 @@ useEffect(() => {
         {songs.map(song => (
           <Grid item xs={12} sm={6} md={4} key={song.id}>
             <Paper sx={{p:2, position:"relative"}}>
-              <SongCard song={song}/>
+              <SongCard song={song} currentUser={currentUser}/>
               <IconButton
                 color="error"
                 sx={{position:"absolute", top:10, right:10}}

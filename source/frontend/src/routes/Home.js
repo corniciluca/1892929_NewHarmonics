@@ -57,11 +57,11 @@ export default function Home({ currentUser }) {
             </Typography>
           </Paper>
           <Box sx={sectionStyle("#7e57c2")}>
-            <SongList songs={trending} title="Trending" variant="carousel" itemWidth={220} height={320} />
+            <SongList songs={trending} title="Trending" variant="carousel" itemWidth={220} height={320} currentUser={currentUser} />
           </Box>
 
           <Box sx={sectionStyle("#009688")}>
-            <SongList songs={recent} title="Recent Uploads" variant="carousel" itemWidth={220} height={320} />
+            <SongList songs={recent} title="Recent Uploads" variant="carousel" itemWidth={220} height={320} currentUser={currentUser} />
           </Box>
 
           {isLoggedIn && (
@@ -70,7 +70,7 @@ export default function Home({ currentUser }) {
               <Grid container spacing={3}>
                 {following.map(song => (
                   <Grid item xs={12} sm={6} md={2.4} key={song.id || song._id}>
-                    <SongCard song={song} color="#4db6ac"/>
+                    <SongCard song={song} color="#4db6ac" currentUser={currentUser}/>
                   </Grid>
                 ))}
               </Grid>
@@ -83,7 +83,7 @@ export default function Home({ currentUser }) {
               <Grid container spacing={3}>
                 {yourMusic.map(song => (
                   <Grid item xs={12} sm={6} md={2.4} key={song.id || song._id}>
-                    <SongCard song={song} color="#ffa726"/>
+                    <SongCard song={song} color="#ffa726" currentUser={currentUser}/>
                   </Grid>
                 ))}
               </Grid>

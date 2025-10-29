@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
   Card, CardContent, CardMedia, Typography, CardActions, IconButton, Box, Chip, Link
 } from "@mui/material";
@@ -7,13 +7,50 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { Link as RouterLink } from 'react-router-dom';
-
 import { PlayerContext } from './PlayerContext';
+import { likeSong, unlikeSong } from '../api/songApi';
 
-export default function SongCard({ song, color }) {
-  const [isLiked, setIsLiked] = useState(false);
+export default function SongCard({ song, color, currentUser }) {
   const visuals = song.playCount || song.play_count || song.views || song.visuals || 0;
   const player = useContext(PlayerContext);
+
+  const initialLikes = song.likedBy ? song.likedBy.length : 0;
+  const [likes, setLikes] = useState(initialLikes);
+  const isUserLiked = !!currentUser && !!song.likedBy && song.likedBy.includes(currentUser.id);
+  const [isLiked, setIsLiked] = useState(isUserLiked);
+  useEffect(() => {
+      const newInitialLikes = song.likedBy ? song.likedBy.length : 0;
+      const newIsUserLiked = !!currentUser && !!song.likedBy && song.likedBy.includes(currentUser.id);
+      setLikes(newInitialLikes);
+      setIsLiked(newIsUserLiked);
+    }, [song, currentUser]);
+
+    // 4. Implement the toggle like handler
+    const handleLikeToggle = async (e) => {
+      e.stopPropagation();
+      if (!currentUser) {
+          alert("You must be logged in to like a song.");
+          return;
+      }
+
+      try {
+          if (isLiked) {
+              // UNLIKE action
+              await unlikeSong(song.id);
+              setLikes(l => l - 1); // Optimistic UI update
+          } else {
+              // LIKE action
+              await likeSong(song.id);
+              setLikes(l => l + 1); // Optimistic UI update
+          }
+          setIsLiked(l => !l); // Toggle the heart icon
+      } catch (error) {
+          console.error("Error toggling like status:", error);
+          alert(`Failed to update like status. Please try again.`);
+          // Note: For a rollback, you would revert the setLikes/setIsLiked calls here
+      }
+    };
+
 
   const { playSong, openSongDetail } = player || {}; // Destructure safely
   return (
@@ -95,7 +132,7 @@ export default function SongCard({ song, color }) {
         />
       </Box>
       <CardActions sx={{ justifyContent: 'center', mb: 1 }}>
-        <IconButton sx={{ color }} onClick={(e) => {e.stopPropagation(); setIsLiked(!isLiked);}}>
+        <IconButton sx={{ color }} onClick={handleLikeToggle}>
           {isLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
         </IconButton>
 
