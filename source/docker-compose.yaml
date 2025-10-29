@@ -81,6 +81,9 @@ services:
         condition: service_healthy
       elasticsearch:
         condition: service_started
+    user: root
+    command: sh -c "chown -R springuser:springgroup /app/music && exec su -s /bin/sh springuser -c 'java -jar app.jar'"
+
   rabbitmq:
     <<: *base-service
     image: rabbitmq:3.11-management
