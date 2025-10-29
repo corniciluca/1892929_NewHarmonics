@@ -1,44 +1,27 @@
 import React, { useState, useEffect } from 'react';
+import { Container, Typography, Grid, CircularProgress, Alert } from '@mui/material';
+import SongCard from '../components/SongCard'; // Import your SongCard
+import { getUserFeed } from '../api/songApi'; // Import your standardized API function
 
-function FeedPage() {
+// Accept currentUser to pass it down to SongCard for 'like' functionality
+export default function FeedPage({ currentUser }) {
     const [songs, setSongs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchFeed = async () => {
-            const token = localStorage.getItem('authToken'); // Get the stored JWT
-
-            if (!token) {
+            // This component requires a logged-in user
+            if (!currentUser) {
                 setError("You must be logged in to view your feed.");
                 setLoading(false);
                 return;
             }
 
             try {
-                // The URL MUST use the API GATEWAY's exposed port (9000),
-                // typically defined in an environment variable or config file.
-                const apiUrl = process.env.REACT_APP_API_GATEWAY_URL || 'http://localhost:9000';
-
-                const response = await fetch(`${apiUrl}/feed`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`, // Pass the JWT in the Authorization header
-                        'Content-Type': 'application/json',
-                    }
-                });
-
-                if (response.status === 401 || response.status === 403) {
-                    setError("Authentication failed. Please log in again.");
-                    setLoading(false);
-                    return;
-                }
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
+                // Use the API function from songApi.js
+                // It automatically handles auth headers
+                const data = await getUserFeed(currentUser.id); //
                 setSongs(data);
             } catch (e) {
                 setError(e.message || "Failed to fetch feed data.");
@@ -48,25 +31,40 @@ function FeedPage() {
         };
 
         fetchFeed();
-    }, []);
+    }, [currentUser]); // Re-run if the user logs in or out
 
-    if (loading) return <div>Loading your feed...</div>;
-    if (error) return <div>Error: {error}</div>;
+    if (loading) {
+        return <Container sx={{ textAlign: 'center', mt: 10 }}><CircularProgress /></Container>;
+    }
+
+    if (error) {
+        return (
+          <Container sx={{ mt: 10 }}>
+            <Alert severity="error">{error}</Alert>
+          </Container>
+        );
+    }
 
     return (
-        <div>
-            <h1>Your Personalized Feed</h1>
+        <Container maxWidth="lg" sx={{ mt: 5 }}>
+            <Typography variant="h4" sx={{ mb: 3, fontWeight: 700, color: 'primary.main' }}>
+                Your Feed
+            </Typography>
+
             {songs.length === 0 ? (
-                <p>No songs in your feed yet. Follow some artists!</p>
+                <Typography variant="body1" sx={{ fontStyle: 'italic' }}>
+                    No songs in your feed yet. Follow some artists to see their latest uploads here!
+                </Typography>
             ) : (
-                <ul>
+                <Grid container spacing={4}>
                     {songs.map(song => (
-                        <li key={song.id}>{song.title} by {song.artist}</li>
+                        <Grid item key={song.id} xs={12} sm={6} md={3}>
+                            {/* Use SongCard and pass currentUser */}
+                            <SongCard song={song} currentUser={currentUser} />
+                        </Grid>
                     ))}
-                </ul>
+                </Grid>
             )}
-        </div>
+        </Container>
     );
 }
-
-export default FeedPage;

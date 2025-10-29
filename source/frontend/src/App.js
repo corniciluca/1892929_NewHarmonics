@@ -40,7 +40,11 @@ function App() {
     // Prima, controlla se il token è valido
     checkLoginStatus()
       .then(validationResponse => {
-        if (validationResponse.valid && validationResponse.userId) {
+        const isValidId = validationResponse.userId !== null &&
+                                  validationResponse.userId !== undefined &&
+                                  validationResponse.userId !== "undefined" &&
+                                  !isNaN(parseInt(validationResponse.userId))
+        if (validationResponse.valid && isValidId) { // Use the new check
           // Se valido, usa lo userId per prendere i dati completi
           return getUserById(validationResponse.userId);
         } else {
@@ -102,7 +106,10 @@ function App() {
           element={!isLoggedIn ? <Login onLogin={handleLoginSuccess} /> : <Navigate to="/profile" />} 
         />
         <Route path="/register" element={!isLoggedIn ? <Register /> : <Navigate to="/profile" />} />
-        <Route path="/profile" element={isLoggedIn ? <Profile user={currentUser} /> : <Navigate to="/login" />} />
+        <Route
+          path="/profile"
+          element={isLoggedIn ? <Navigate to={`/user/${currentUser.id}`} /> : <Navigate to="/login" />}
+        />
         <Route path="/user/:id" element={isLoggedIn ? <UserProfile currentUser={currentUser}/> : <Navigate to="/login" />} />
         <Route 
           path="/edit-profile" 

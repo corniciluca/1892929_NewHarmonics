@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Grid, CircularProgress, Alert } from '@mui/material';
-import ArtistCard from '../components/ArtistCard';
+import {
+    Container,
+    Typography,
+    Grid,
+    CircularProgress,
+    Alert,
+    Paper, // Import Paper
+    Avatar // Import Avatar
+} from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom'; // Import RouterLink
 import { getFollowedArtists } from '../api/userApi';
 
 export default function Following({ currentUser }) {
@@ -9,7 +17,6 @@ export default function Following({ currentUser }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Check if user is logged in and has an ID
     if (currentUser && currentUser.id) {
         const fetchFollowing = async () => {
             try {
@@ -26,7 +33,6 @@ export default function Following({ currentUser }) {
         fetchFollowing();
     } else {
         setLoading(false);
-        // This case should be handled by <Navigate to="/login"/> in App.js
     }
   }, [currentUser]);
 
@@ -39,8 +45,11 @@ export default function Following({ currentUser }) {
   }
 
   return (
-    <Container>
-      <Typography variant="h4" sx={{mt:5, mb:3}}>Artisti che segui</Typography>
+    <Container sx={{ mt: 5 }}>
+      {/* Use the same styling as your other main pages */}
+      <Typography variant="h4" sx={{ mb: 3, fontWeight: 700, color: 'secondary.main' }}>
+        Artists You Follow
+      </Typography>
 
       {followedArtists.length === 0 ? (
         <Typography variant="body1" sx={{ mt: 2, fontStyle: 'italic' }}>
@@ -49,9 +58,30 @@ export default function Following({ currentUser }) {
       ) : (
         <Grid container spacing={4}>
           {followedArtists.map(artist => (
-            // Assuming ArtistCard is designed to display a user object
-            <Grid item xs={12} sm={6} md={4} key={artist.id}>
-              <ArtistCard artist={artist} />
+            // Use the consistent styling from UserProfile.js
+            <Grid item xs={12} sm={6} md={3} key={artist.id}>
+              <Paper
+                component={RouterLink}
+                to={`/user/${artist.id}`} // Link to the artist's profile
+                sx={{
+                  p: 2,
+                  textAlign: 'center',
+                  textDecoration: 'none',
+                  color: 'inherit',
+                  '&:hover': { boxShadow: 4 },
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center'
+                }}
+              >
+                <Avatar sx={{ width: 100, height: 100, margin: 'auto', mb: 2, bgcolor: 'secondary.light' }}>
+                  {artist.username.charAt(0).toUpperCase()}
+                </Avatar>
+                <Typography variant="h6" fontWeight={500} noWrap>
+                  {artist.username}
+                </Typography>
+              </Paper>
             </Grid>
           ))}
         </Grid>

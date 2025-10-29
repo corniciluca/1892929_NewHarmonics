@@ -10,7 +10,8 @@ import {
     CircularProgress,
     Alert,
     Divider,
-    Chip
+    Chip,
+    Paper
 } from '@mui/material';
 import SongCard from '../components/SongCard';
 import {
@@ -19,45 +20,58 @@ import {
     followArtist,
     unfollowArtist
 } from '../api/userApi';
-import { getSongsByArtistId } from '../api/songApi';
+import { getSongsByArtistId, getLikedSongs } from '../api/songApi';
+import { Link as RouterLink } from 'react-router-dom';
 
 export default function UserProfile({ currentUser }) {
-  // Use 'id' to match the original file's destructuring
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // State for the profile being viewed (using 'user' as in original)
   const [user, setUser] = useState(null);
   const [songs, setSongs] = useState([]);
+  const [likedSongs, setLikedSongs] = useState([]);
+  const [followedArtists, setFollowedArtists] = useState([])
 
-  // State for follow logic
   const [isFollowing, setIsFollowing] = useState(false);
   const [isCurrentUser, setIsCurrentUser] = useState(false);
 
-  // Loading states
   const [loading, setLoading] = useState(true);
-  const [followLoading, setFollowLoading] = useState(false); // For the follow button
+  const [followLoading, setFollowLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // 3. Check if this is the current user's own profile
-    if (currentUser && currentUser.id === parseInt(id)) {
-      setIsCurrentUser(true);
-    } else {
-      setIsCurrentUser(false);
-    }
+    // Use loose equality (==) since one might be string, one number
+    const isOwnProfile = currentUser && currentUser.id == id;
+    setIsCurrentUser(isOwnProfile);
 
-    // 4. Fetch all data for the profile page
     const fetchData = async () => {
       try {
         setLoading(true);
-        setError(null); // Clear previous error
+        setError(null);
 
-        // Fetch the profile user's data
         const userData = await getUserById(id);
         setUser(userData);
 
-        // Fetch their songs if they are an artist
+        if (isOwnProfile) {
+            try {
+                const userLikedSongs = await getLikedSongs();
+                setLikedSongs(userLikedSongs);
+            } catch (likedErr) {
+                console.warn("Could not fetch liked songs:", likedErr);
+                setLikedSongs([]);
+            }
+
+            try {
+                const followed = await getFollowedArtists(currentUser.id);
+                setFollowedArtists(followed);
+            } catch (followedErr) {
+                console.warn("Could not fetch followed artists:", followedErr);
+                setFollowedArtists([]);
+            }
+        } else {
+            setLikedSongs([]);
+        }
+
         if (userData.role === 'ARTIST') {
           const userSongs = await getSongsByArtistId(id);
           setSongs(userSongs);
@@ -65,11 +79,9 @@ export default function UserProfile({ currentUser }) {
             setSongs([]);
         }
 
-        // 5. Check follow status (only if logged in, not their own profile, and the profile is an ARTIST)
-        if (currentUser && currentUser.id && currentUser.id !== parseInt(id) && userData.role === 'ARTIST') {
-          // Get the list of artists the *current user* follows
+        // Use loose equality (!=)
+        if (currentUser && currentUser.id && currentUser.id != id && userData.role === 'ARTIST') {
           const followedList = await getFollowedArtists(currentUser.id);
-          // Check if the profileUser's ID is in that list
           const alreadyFollowing = followedList.some(artist => String(artist.id) === id);
           setIsFollowing(alreadyFollowing);
         } else {
@@ -77,7 +89,6 @@ export default function UserProfile({ currentUser }) {
         }
 
       } catch (err) {
-        // Using the existing Italian error string from the original file
         setError(err.message || "Impossibile caricare il profilo dell'utente.");
       } finally {
         setLoading(false);
@@ -85,12 +96,11 @@ export default function UserProfile({ currentUser }) {
     };
 
     fetchData();
-  }, [id, currentUser]); // Re-run when the URL (id) or currentUser changes
+  }, [id, currentUser]);
 
-  // 6. Handler for the follow/unfollow button
   const handleFollowToggle = async () => {
     if (!currentUser) {
-      navigate('/login'); // Not logged in, send to login
+      navigate('/login');
       return;
     }
 
@@ -98,7 +108,6 @@ export default function UserProfile({ currentUser }) {
 
     setFollowLoading(true);
     try {
-        // This is the ID of the artist profile being viewed (e.g., 2)
         const artistId = parseInt(id);
 
       if (isFollowing) {
@@ -115,16 +124,17 @@ export default function UserProfile({ currentUser }) {
     }
   };
 
-  // --- Render Logic ---
   if (loading) return <Container sx={{ textAlign: 'center', mt: 10 }}><CircularProgress /></Container>;
   if (error) return <Container sx={{ mt: 10 }}><Alert severity="error">{error}</Alert></Container>;
   if (!user) return <Container sx={{ mt: 10 }}><Typography>Utente non trovato.</Typography></Container>;
 
+  // This is correct as you set it
+  const PREVIEW_COUNT = 5
   const isArtist = user.role === 'ARTIST';
 
   return (
     <Container sx={{ mt: 5 }}>
-      {/* User Info Section */}
+      {/* User Info Section (unchanged) */}
       <Box sx={{ display: 'flex', alignItems: 'center', pb: 2 }}>
         <Avatar sx={{ width: 90, height: 90, mr: 3, bgcolor: 'primary.main' }}>
           {user.username.charAt(0).toUpperCase()}
@@ -140,10 +150,7 @@ export default function UserProfile({ currentUser }) {
             sx={{ mt: 1 }}
           />
         </Box>
-
-        {/* 7. Render Follow Button */}
         <Box sx={{ ml: 'auto' }}>
-          {/* Show the button only if logged in, NOT their own profile, AND the profile is an ARTIST */}
           {currentUser && !isCurrentUser && isArtist && (
             <Button
               variant={isFollowing ? "outlined" : "contained"}
@@ -154,7 +161,6 @@ export default function UserProfile({ currentUser }) {
               {followLoading ? <CircularProgress size={24} /> : (isFollowing ? "Following" : "Follow")}
             </Button>
           )}
-          {/* If this is the user's own profile, show Edit button instead */}
           {isCurrentUser && (
              <Button variant="outlined" onClick={() => navigate('/edit-profile')}>
               Edit Profile
@@ -165,34 +171,141 @@ export default function UserProfile({ currentUser }) {
 
       <Divider sx={{ my: 4 }} />
 
-      {/* Artist Songs Section */}
-      {isArtist && (
-        <Box>
-          <Typography variant="h5" fontWeight={600} sx={{ mb: 2 }}>
-            Songs by {user.username}
-          </Typography>
-          <Grid container spacing={3}>
-            {songs.length > 0 ? (
-              songs.map((song) => (
-                <Grid item xs={12} sm={6} md={4} key={song.id}>
-                  <SongCard song={song} />
-                </Grid>
-              ))
+        {/* --- LIKED SONGS SECTION --- */}
+        {isCurrentUser && (
+          <>
+            <Box sx={{ mb: 4 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography variant="h5" fontWeight={600}>
+                  Your Liked Songs
+                </Typography>
+                <Button
+                  component={RouterLink}
+                  to="/songs/liked"
+                  size="small"
+                >
+                  See All
+                </Button>
+              </Box>
+
+              {likedSongs.length > 0 ? (
+              <Grid container spacing={3}>
+                {likedSongs.slice(0, PREVIEW_COUNT).map((song) => (
+                  // --- FIX: Changed md={3} to md={2.4} for 5 columns ---
+                  <Grid item xs={12} sm={6} md={2.4} key={song.id}>
+                    <SongCard song={song} currentUser={currentUser} />
+                  </Grid>
+                ))}
+              </Grid>
             ) : (
-              <Typography sx={{ ml: 2, fontStyle: 'italic' }}>Questo artista non ha ancora caricato canzoni.</Typography>
+              <Typography sx={{ ml: 2, fontStyle: 'italic' }}>
+                You haven't liked any songs yet.
+              </Typography>
             )}
-          </Grid>
-        </Box>
+          </Box>
+          <Divider sx={{ my: 4 }} />
+        </>
+        )}
+
+      {/* FOLLOWING SECTION */}
+      {isCurrentUser && (
+        <>
+          <Box sx={{ mb: 4 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+              <Typography variant="h5" fontWeight={600}>
+                Following
+              </Typography>
+              <Button
+                component={RouterLink}
+                to="/following"
+                size="small"
+              >
+                See All
+              </Button>
+            </Box>
+            <Grid container spacing={3}>
+              {followedArtists.length > 0 ? (
+                followedArtists.slice(0, PREVIEW_COUNT).map((artist) => (
+                  // --- FIX: Changed md={3} to md={2.4} for 5 columns ---
+                  <Grid item xs={12} sm={6} md={2.4} key={artist.id}>
+                    <Paper
+                      component={RouterLink}
+                      to={`/user/${artist.id}`}
+                      sx={{
+                        p: 2,
+                        textAlign: 'center',
+                        textDecoration: 'none',
+                        color: 'inherit',
+                        '&:hover': { boxShadow: 4 },
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center'
+                      }}
+                    >
+                      <Avatar sx={{ width: 80, height: 80, margin: 'auto', mb: 1, bgcolor: 'secondary.main' }}>
+                        {artist.username.charAt(0).toUpperCase()}
+                      </Avatar>
+                      <Typography variant="body1" fontWeight={500} noWrap>
+                        {artist.username}
+                      </Typography>
+                    </Paper>
+                  </Grid>
+                ))
+              ) : (
+                <Typography sx={{ ml: 2, fontStyle: 'italic' }}>
+                  You aren't following any artists yet.
+                </Typography>
+              )}
+            </Grid>
+          </Box>
+          <Divider sx={{ my: 4 }} />
+        </>
       )}
 
-      {/* If profile is a LISTENER */}
-      {!isArtist && (
-         <Typography sx={{ fontStyle: 'italic' }}>
-            Questo utente è un ascoltatore e non ha caricato canzoni.
-         </Typography>
-      )}
+      {/* ARTIST SONGS SECTION */}
+        {isArtist && (
+          <Box>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+              <Typography variant="h5" fontWeight={600}>
+                Songs by {user.username}
+              </Typography>
+              {isCurrentUser && (
+                <Button
+                  component={RouterLink}
+                  to="/manage-songs"
+                  size="small"
+                >
+                  Manage Songs
+                </Button>
+              )}
+            </Box>
+
+            <Grid container spacing={3}>
+              {songs.length > 0 ? (
+                songs.slice(0, PREVIEW_COUNT).map((song) => (
+                  // --- FIX: Changed md={3} to md={2.4} for 5 columns ---
+                  <Grid item xs={12} sm={6} md={2.4} key={song.id}>
+                    <SongCard song={song} currentUser={currentUser} />
+                  </Grid>
+                ))
+              ) : (
+                <Typography sx={{ ml: 2, fontStyle: 'italic' }}>
+                  {isCurrentUser ? "You haven't" : "This artist hasn't"} uploaded any songs yet.
+                </Typography>
+              )}
+            </Grid>
+          </Box>
+        )}
+
+        {/* If profile is a LISTENER (unchanged) */}
+          {!isArtist && (
+             <Typography sx={{ fontStyle: 'italic' }}>
+                This user is a listener so they cannot upload songs
+             </Typography>
+          )}
+        <Divider sx={{ my: 4 }} />
 
     </Container>
   );
 }
-
