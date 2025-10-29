@@ -47,12 +47,12 @@ export async function deleteSong(id) {
 // Search endpoints (Elasticsearch powered on the backend)
 export async function searchSongs(q) {
   const encoded = encodeURIComponent(q || '');
-  return apiRequest(`/songs/search?q=${encoded}`);
+  return apiRequest('/songs/search?q=${encoded}');
 }
 
 export async function searchSongsByTitle(q) {
   const encoded = encodeURIComponent(q || '');
-  return apiRequest(`/songs/search/title?q=${encoded}`);
+  return apiRequest('/songs/search/title?q=${encoded}');
 }
 
 export async function getTrendingSongs() {
@@ -64,5 +64,5 @@ export async function getRecentSongs() {
 }
 
 export async function getUserFeed(userId) {
-  return apiRequest(`/feed/${userId}`);
+  return apiRequest('/feed');
 }

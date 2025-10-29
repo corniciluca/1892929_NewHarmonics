@@ -49,7 +49,7 @@ public class SongService {
         if (!Files.exists(uploadDir)) {
             Files.createDirectories(uploadDir);
         }
-        String filePath = uploadDir + file.getOriginalFilename();
+        String filePath = uploadDir + "/" + file.getOriginalFilename();
         Files.copy(file.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
 
         Song song = new Song();

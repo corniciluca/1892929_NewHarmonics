@@ -74,7 +74,7 @@ public class SongController {
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateSong(
             @PathVariable String id,
-            @RequestHeader("X-User-Id") String userId, // 🚨 Keep this for ownership check 🚨
+            @RequestHeader("X-User-Id") String userId,
             @RequestHeader("X-User-Role") String role,
             @RequestBody Song updatedSong) {
 
