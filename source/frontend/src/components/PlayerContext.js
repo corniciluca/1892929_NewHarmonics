@@ -11,6 +11,9 @@ export function PlayerProvider({ children }) {
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
 
+  // --- 1. ADD NEW STATE FOR MODAL ---
+  const [detailSong, setDetailSong] = useState(null); // null = closed, song = open
+
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -106,10 +109,18 @@ export function PlayerProvider({ children }) {
     setProgress(time);
   };
 
+  const openSongDetail = (song) => {
+    setDetailSong(song);
+  };
+
+  const closeSongDetail = () => {
+    setDetailSong(null);
+  };
+
   return (
     <PlayerContext.Provider value={{
       currentSong, setCurrentSong, isPlaying, playSong, togglePlay,
-      volume, setVolume, progress, duration, seek
+      volume, setVolume, progress, duration, seek, detailSong, openSongDetail, closeSongDetail
     }}>
       {children}
     </PlayerContext.Provider>

@@ -14,6 +14,8 @@ export default function SongCard({ song, color }) {
   const [isLiked, setIsLiked] = useState(false);
   const visuals = song.playCount || song.play_count || song.views || song.visuals || 0;
   const player = useContext(PlayerContext);
+
+  const { playSong, openSongDetail } = player || {}; // Destructure safely
   return (
     <Card sx={{
 
@@ -22,8 +24,11 @@ export default function SongCard({ song, color }) {
       display: 'flex', flexDirection: 'column', alignItems: 'center',
       borderRadius: 4, bgcolor: `${color || "#bdbdbd"}12`,
       boxShadow: 2, transition: 'transform 0.2s, box-shadow 0.2s',
+      cursor: 'pointer',
       "&:hover": { transform: "scale(1.035)", boxShadow: 8, bgcolor: `${color || "#bdbdbd"}22` }
-    }}>
+    }}
+      onClick={() => openSongDetail && openSongDetail(song)}
+    >
       <CardContent sx={{ textAlign: "center" }}>
         <Typography variant="h6" fontWeight={600} sx={{
             // --- FIXES FOR TEXT OVERFLOW ---
@@ -90,11 +95,14 @@ export default function SongCard({ song, color }) {
         />
       </Box>
       <CardActions sx={{ justifyContent: 'center', mb: 1 }}>
-        <IconButton sx={{ color }} onClick={() => setIsLiked(!isLiked)}>
+        <IconButton sx={{ color }} onClick={(e) => {e.stopPropagation(); setIsLiked(!isLiked);}}>
           {isLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
         </IconButton>
 
-        <IconButton sx={{ color }} onClick={() => player && player.playSong && player.playSong(song)}>
+        <IconButton sx={{ color }} onClick={(e) => {
+          e.stopPropagation();
+          player && player.playSong && player.playSong(song)
+          }}>
           <PlayArrowIcon />
         </IconButton>
         

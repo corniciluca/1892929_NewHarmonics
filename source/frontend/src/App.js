@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Navbar from './components/Navbar';
 import { PlayerProvider } from './components/PlayerContext';
 import SongPlayer from './components/SongPlayer';
+import SongDetailModal from './components/SongDetailModal';
 import Home from './routes/Home';
 import Login from './routes/Login';
 import Register from './routes/Register';
@@ -145,6 +146,7 @@ function App() {
 
         <Route path="*" element={<NotFound />} />
         </Routes>
+        <SongDetailModal />
         <SongPlayer />
       </Router>
     </PlayerProvider>
