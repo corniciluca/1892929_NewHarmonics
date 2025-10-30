@@ -20,3 +20,4 @@ TODO:
 - [ ] Song details - Onorio
 - [ ] Pictures - Onorio
 - [ ] Likes - Alessandro
+- [ ] Fix song progress bar
