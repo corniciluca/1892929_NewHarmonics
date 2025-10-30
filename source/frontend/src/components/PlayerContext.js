@@ -67,19 +67,9 @@ export function PlayerProvider({ children, currentUser }) {
     // Determine effective src: prefer absolute URLs. If fileUrl looks like a filesystem path
     // (starts with /app or doesn't start with http), use the API gateway download endpoint
     // so the browser requests the file through the backend which can set correct headers.
-  let effectiveSrc = src;
-      const isAbsolute = /^https?:\/\//i.test(src);
-      const looksLikePath = src && (src.startsWith('/app') || src.startsWith('app') || src.indexOf('\\') !== -1);
-      const gateway = process.env.REACT_APP_API_GATEWAY_URL || 'http://localhost:9000';
-      if (!isAbsolute && (looksLikePath || !src)) {
-        // If we have an id, prefer using the download endpoint to stream via gateway
-        if (song.id) {
-          effectiveSrc = `${gateway}/songs/${song.id}/download`;
-        } else {
-          // fallback: prefix with gateway to form absolute URL
-          effectiveSrc = `${gateway}${src.startsWith('/') ? src : '/' + src}`;
-        }
-      }
+  // Always use the download endpoint through the API gateway
+  const gateway = process.env.REACT_APP_API_GATEWAY_URL || 'http://localhost:9000';
+  const effectiveSrc = `${gateway}/songs/${song.id}/download`;
 
       setCurrentSong(song);
       audio.src = effectiveSrc;

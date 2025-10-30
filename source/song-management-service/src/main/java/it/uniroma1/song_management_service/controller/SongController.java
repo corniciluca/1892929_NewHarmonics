@@ -7,9 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.Path;
+import java.util.Locale;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -43,23 +41,23 @@ public class SongController {
     @GetMapping("/{id}/cover")
     public ResponseEntity<byte[]> downloadCoverImage(@PathVariable String id) throws IOException {
         Song song = songService.getSongById(id);
-        
+
         if (song.getCoverImageUrl() == null || song.getCoverImageUrl().isBlank()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
 
-        Path imagePath = Paths.get(song.getCoverImageUrl());
-        
-        if (!Files.exists(imagePath)) {
-             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
+        // Use SongService to fetch the cover bytes (MinIO-backed)
+        byte[] data = songService.downloadCoverImage(id);
 
-        byte[] data = Files.readAllBytes(imagePath);
-        
-        // Automatically determine content type (e.g., image/jpeg, image/png)
-        String contentType = Files.probeContentType(imagePath);
-        if (contentType == null) {
-            contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
+        // Try to infer content type from the stored object name (which contains original filename)
+        String filename = song.getCoverImageUrl();
+        String contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
+        if (filename != null) {
+            String lower = filename.toLowerCase(Locale.ROOT);
+            if (lower.endsWith(".png")) contentType = "image/png";
+            else if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) contentType = "image/jpeg";
+            else if (lower.endsWith(".gif")) contentType = "image/gif";
+            else if (lower.endsWith(".webp")) contentType = "image/webp";
         }
 
         return ResponseEntity.ok()

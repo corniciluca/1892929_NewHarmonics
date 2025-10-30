@@ -51,9 +51,8 @@ export default function SongCard({ song, color, currentUser }) {
       }
     };
 
-  // 3. Construct the cover image URL
-  // We check 'song.coverImageUrl' which is the *path* saved in the database
-  const coverImageUrl = song.coverImageUrl ? `${gateway}/songs/${song.id}/cover` : null;
+  // Construct the cover image URL through the API gateway
+  const coverImageUrl = song.id ? `${gateway}/songs/${song.id}/cover` : null;
 
   const { playSong, openSongDetail } = player || {};
   
