@@ -9,7 +9,7 @@ Work in progress:
 - [x] Front-end
 - [x] Improved search system
 - [x] Connect frontend to backend
-- [ ] Upload songs to external service
+- [x] Upload songs to external service
 - [ ] Further improvements and changes
 
 TODO:
