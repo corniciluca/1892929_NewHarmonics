@@ -1,9 +1,14 @@
 import React, { useContext } from 'react';
-import { Box, IconButton, Slider, Typography } from '@mui/material';
+import { Box, IconButton, Slider, Typography, Link, CardMedia } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import VolumeUp from '@mui/icons-material/VolumeUp';
+import MusicNoteIcon from '@mui/icons-material/MusicNote';
+import { Link as RouterLink } from 'react-router-dom';
 import { PlayerContext } from './PlayerContext';
+
+// Define the gateway URL
+const gateway = process.env.REACT_APP_API_GATEWAY_URL || 'http://localhost:9000';
 
 function formatTime(sec) {
   if (!sec || isNaN(sec)) return '0:00';
@@ -20,15 +25,63 @@ export default function SongPlayer() {
   // Hidden when no song selected
   if (!currentSong) return null;
 
+  // Get artist ID from the song
+  const artistId = currentSong.artistId || currentSong.userId;
+  
+  // Construct the cover image URL through the API gateway
+  const coverImageUrl = currentSong.id ? `${gateway}/songs/${currentSong.id}/cover` : null;
+
   return (
     <Box sx={{
       position: 'fixed', bottom: 0, left: 0, right: 0, bgcolor: 'background.paper', boxShadow: 6,
       display: 'flex', alignItems: 'center', gap: 2, p: 1.5, zIndex: 1400
     }}>
-      <Box sx={{ width: 220, display: 'flex', alignItems: 'center', gap: 2 }}>
+      <Box sx={{ width: 280, display: 'flex', alignItems: 'center', gap: 2 }}>
+        {/* Album Cover */}
+        <Box sx={{
+          width: 56, 
+          height: 56, 
+          borderRadius: 2,
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          bgcolor: coverImageUrl ? 'transparent' : '#bdbdbd55',
+          overflow: 'hidden',
+          flexShrink: 0
+        }}>
+          {coverImageUrl ? (
+            <CardMedia
+              component="img"
+              image={coverImageUrl}
+              alt={currentSong.title}
+              sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          ) : (
+            <MusicNoteIcon sx={{ width: 32, height: 32, opacity: 0.7, color: '#616161' }} />
+          )}
+        </Box>
+        
         <Box>
           <Typography variant="subtitle1" fontWeight={600}>{currentSong.title}</Typography>
-          <Typography variant="caption" color="text.secondary">{currentSong.artist}</Typography>
+          {artistId ? (
+            <Link 
+              component={RouterLink} 
+              to={`/user/${artistId}`}
+              sx={{ 
+                color: 'text.secondary', 
+                textDecoration: 'none', 
+                '&:hover': { textDecoration: 'underline' }
+              }}
+            >
+              <Typography variant="caption" color="text.secondary">
+                {currentSong.artist}
+              </Typography>
+            </Link>
+          ) : (
+            <Typography variant="caption" color="text.secondary">
+              {currentSong.artist}
+            </Typography>
+          )}
         </Box>
       </Box>
 
