@@ -194,6 +194,87 @@ public class SongService {
         return songRepository.save(existingSong);
     }
 
+    /**
+     * Updates a song's details, and optionally replaces its audio or cover image.
+     * This method handles deleting old files from MinIO if new ones are provided.
+     */
+    public Song updateSongDetails(String id, String title, String album, String genre, MultipartFile audioFile, MultipartFile coverImageFile) throws Exception {
+
+        Song existingSong = songRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Song not found with ID: " + id));
+
+        // Update text fields
+        existingSong.setTitle(title);
+        existingSong.setAlbum(album);
+        existingSong.setGenre(genre);
+
+        boolean fileChanged = false;
+
+        // Check and update Audio File
+        if (audioFile != null && !audioFile.isEmpty()) {
+            fileChanged = true;
+            log.info("Replacing audio file for song: {}", id);
+
+            // Delete old audio file from MinIO
+            try {
+                minioService.deleteFile(existingSong.getFileUrl());
+            } catch (Exception e) {
+                log.warn("Could not delete old audio file, proceeding: {}", e.getMessage());
+            }
+
+            // Upload new audio file
+            String newAudioObjectName = minioService.uploadFile(audioFile);
+            existingSong.setFileUrl(newAudioObjectName);
+
+            // --- Recalculate Duration ---
+            File tempAudioFile = null;
+            try {
+                tempAudioFile = File.createTempFile("update-", "-" + audioFile.getOriginalFilename());
+                try (FileOutputStream fos = new FileOutputStream(tempAudioFile)) {
+                    fos.write(audioFile.getBytes());
+                }
+                AudioFile f = AudioFileIO.read(tempAudioFile);
+                AudioHeader header = f.getAudioHeader();
+                existingSong.setDurationSeconds(header.getTrackLength());
+                log.info("New duration calculated: {}s", header.getTrackLength());
+            } finally {
+                if (tempAudioFile != null && tempAudioFile.exists()) {
+                    tempAudioFile.delete();
+                }
+            }
+        }
+
+        // Check and update Cover Image
+        if (coverImageFile != null && !coverImageFile.isEmpty()) {
+            fileChanged = true;
+            log.info("Replacing cover image for song: {}", id);
+
+            // Delete old cover image from MinIO
+            if (existingSong.getCoverImageUrl() != null && !existingSong.getCoverImageUrl().isBlank()) {
+                try {
+                    minioService.deleteFile(existingSong.getCoverImageUrl());
+                } catch (Exception e) {
+                    log.warn("Could not delete old cover image, proceeding: {}", e.getMessage());
+                }
+            }
+
+            // Upload new cover image
+            String newCoverObjectName = minioService.uploadFile(coverImageFile);
+            existingSong.setCoverImageUrl(newCoverObjectName);
+        }
+
+        if (fileChanged) {
+            log.info("File changed, updating timestamp for song: {}", id);
+            existingSong.setUploadDate(LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
+        }
+
+        // Save to DB and Elasticsearch
+        Song savedSong = songRepository.save(existingSong);
+        indexSongInElasticsearch(savedSong);
+
+        return savedSong;
+    }
+
     // Helper method to index song in Elasticsearch
     private void indexSongInElasticsearch(Song song) {
         SongDocument doc = new SongDocument();

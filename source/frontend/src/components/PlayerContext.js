@@ -52,10 +52,13 @@ export function PlayerProvider({ children, currentUser }) {
   const playSong = (song) => {
     if (!song || !audioRef.current) return;
     const audio = audioRef.current;
-    const src = song.fileUrl || song.audioUrl || song.url || '';
+    //Get timestamps for the new song and the currently playing song
+    const newUploadTimestamp = new Date(song.uploadDate || 0).getTime();
+    const currentUploadTimestamp = new Date(currentSong?.uploadDate || 0).getTime();
 
-    // If same song, toggle playback
-    if (currentSong && song.id && currentSong.id === song.id) {
+    // Check if it's the same song AND the same version (timestamp)
+    if (currentSong && song.id === currentSong.id && newUploadTimestamp === currentUploadTimestamp) {
+      // If it is, just toggle play/pause
       if (isPlaying) {
         audio.pause();
         setIsPlaying(false);
@@ -68,17 +71,15 @@ export function PlayerProvider({ children, currentUser }) {
       return;
     }
 
-    // Determine effective src: prefer absolute URLs. If fileUrl looks like a filesystem path
-    // (starts with /app or doesn't start with http), use the API gateway download endpoint
-    // so the browser requests the file through the backend which can set correct headers.
-  // Always use the download endpoint through the API gateway
-  const gateway = process.env.REACT_APP_API_GATEWAY_URL || 'http://localhost:9000';
-  const effectiveSrc = `${gateway}/songs/${song.id}/download`;
+    // If it's a new song OR a new version of the same song, reload the file
+   const gateway = process.env.REACT_APP_API_GATEWAY_URL || 'http://localhost:9000';
+   // 4. Create the cache-busting URL using the timestamp
+   const effectiveSrc = `${gateway}/songs/${song.id}/download?v=${newUploadTimestamp}`;
 
-      setCurrentSong(song);
-      audio.src = effectiveSrc;
+    setCurrentSong(song);
+    audio.src = effectiveSrc;
     audio.currentTime = 0;
-    console.log('Player: attempting to play', src);
+    console.log('Player: attempting to play', effectiveSrc);
     audio.play().then(() => setIsPlaying(true)).catch((err) => {
       console.error('Play failed after setting src:', err);
       setIsPlaying(false);

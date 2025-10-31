@@ -38,8 +38,13 @@ export default function SongPlayer() {
   // Get artist ID from the song
   const artistId = currentSong.artistId || currentSong.userId;
 
-  // Construct the cover image URL
-  const coverImageUrl = currentSong.id ? `${gateway}/songs/${currentSong.id}/cover` : null;
+  // Get the timestamp to use as a cache-busting 'version'
+  const uploadTimestamp = new Date(currentSong.uploadDate || 0).getTime();
+
+  // Construct the cover image URL, adding the timestamp as a query parameter
+  const coverImageUrl = currentSong.id
+  ? `${gateway}/songs/${currentSong.id}/cover?v=${uploadTimestamp}`
+  : null;
 
   return (
     <Box sx={{

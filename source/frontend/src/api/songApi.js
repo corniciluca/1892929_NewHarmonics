@@ -1,10 +1,9 @@
 // In songApi.js
 import { apiRequest } from './api'; // 1. Import the helper
 
-// 2. Remove the old BASE_URL. apiRequest uses API_GATEWAY_URL
 
 export async function getSongs() {
-  // 3. Use apiRequest for all functions
+  // Use apiRequest for all functions
   return apiRequest('/songs');
 }
 
@@ -20,17 +19,17 @@ export async function getSong(id) {
 export async function uploadSong({ file, title, artist, artistId, album, genre, coverImageFile }) {
   const formData = new FormData();
   if (file) formData.append("file", file);
-  if (coverImageFile) formData.append("coverImage", coverImageFile); // 2. Add the new image file
+  if (coverImageFile) formData.append("coverImage", coverImageFile);
   formData.append("title", title);
   formData.append("artist", artist);
   formData.append("artistId", artistId);
   formData.append("album", album);
   formData.append("genre", genre);
 
-  // 4. Use apiRequest for the upload
+  // Use apiRequest for the upload
   return apiRequest('/songs/upload', {
     method: "POST",
-    body: formData, // The change in api.js will handle this correctly
+    body: formData,
   });
 }
 
@@ -38,6 +37,36 @@ export async function updateSong(id, song) {
   return apiRequest(`/songs/${id}`, {
     method: "PUT",
     body: JSON.stringify(song), // apiRequest will set 'Content-Type: json'
+  });
+}
+
+/**
+ * Updates a song's details, including optional audio and cover files.
+ * This sends multipart/form-data.
+ * @param {string} id - The ID of the song to update.
+ * @param {object} songData - An object { title, album, genre, audioFile, coverFile }.
+ */
+export async function updateSongDetails(id, songData) {
+  const formData = new FormData();
+
+  // Add text data
+  formData.append("title", songData.title);
+  formData.append("album", songData.album);
+  formData.append("genre", songData.genre);
+
+  // Conditionally add files (if they are not null)
+  if (songData.audioFile) {
+    formData.append("audioFile", songData.audioFile);
+  }
+  if (songData.coverFile) {
+    // Note: The backend controller expects "coverFile"
+    formData.append("coverFile", songData.coverFile);
+  }
+
+  // Use the new endpoint
+  return apiRequest(`/songs/${id}/update`, {
+    method: "POST",
+    body: formData, // apiRequest will handle FormData correctly (no JSON.stringify)
   });
 }
 

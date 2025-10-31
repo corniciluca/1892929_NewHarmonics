@@ -2,6 +2,8 @@ package it.uniroma1.song_management_service.controller;
 
 import it.uniroma1.song_management_service.model.Song;
 import it.uniroma1.song_management_service.service.SongService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +19,7 @@ import java.util.stream.Collectors;
 public class SongController {
 
     private final SongService songService;
+    private static final Logger log = LoggerFactory.getLogger(SongController.class);
 
     public SongController(SongService songService) {
         this.songService = songService;
@@ -136,6 +139,37 @@ public class SongController {
         updatedSong.setArtistId(existingSong.getArtistId());
 
         return ResponseEntity.ok(songService.updateSong(id,updatedSong));
+    }
+
+    /**
+     * Endpoint to update a song's details, including optional files.
+     * Uses POST /songs/{id}/update to handle multipart/form-data.
+     */
+    @PostMapping("/{id}/update")
+    public ResponseEntity<?> updateSongDetails(
+            @PathVariable String id,
+            @RequestParam("title") String title,
+            @RequestParam("album") String album,
+            @RequestParam("genre") String genre,
+            @RequestParam(value = "audioFile", required = false) MultipartFile audioFile,
+            @RequestParam(value = "coverFile", required = false) MultipartFile coverFile,
+            @RequestHeader("X-User-Id") String userId
+    ) {
+        // Check ownership
+        Song existingSong = songService.getSongById(id);
+        if (!String.valueOf(existingSong.getArtistId()).equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "You can only update your own songs"));
+        }
+
+        try {
+            Song updatedSong = songService.updateSongDetails(id, title, album, genre, audioFile, coverFile);
+            return ResponseEntity.ok(updatedSong);
+        } catch (Exception e) {
+            log.error("Failed to update song details for {}: {}", id, e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to update song: " + e.getMessage()));
+        }
     }
 
     @DeleteMapping("/{id}")
