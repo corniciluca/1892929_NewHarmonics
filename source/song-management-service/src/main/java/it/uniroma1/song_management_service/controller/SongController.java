@@ -113,33 +113,34 @@ public class SongController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Object> updateSong(
-            @PathVariable String id,
-            @RequestHeader("X-User-Id") String userId,
-            @RequestHeader("X-User-Role") String role,
-            @RequestBody Song updatedSong) {
-
-        Song existingSong = songService.getSongById(id);
-        System.out.println("DEBUG: User ID: " + userId + ", Song Artist ID: " + existingSong.getArtistId());
-
-        // Check ownership
-        String existingArtistId = String.valueOf(existingSong.getArtistId());
-        String currentUserId = String.valueOf(userId);
-        System.out.println("DEBUG: User ID: " + currentUserId + ", Song Artist ID: " + existingArtistId);
-        boolean isOwner = currentUserId.equals(existingArtistId);
-        System.out.println("DEBUG: Ownership Check Result: " + isOwner);
-
-        if (!isOwner) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("You can only update your own songs");
-        }
-
-        // Keep the original artist ID (as the request body might not contain it)
-        updatedSong.setArtistId(existingSong.getArtistId());
-
-        return ResponseEntity.ok(songService.updateSong(id,updatedSong));
-    }
+//      UNUSED
+//    @PutMapping("/{id}")
+//    public ResponseEntity<Object> updateSong(
+//            @PathVariable String id,
+//            @RequestHeader("X-User-Id") String userId,
+//            @RequestHeader("X-User-Role") String role,
+//            @RequestBody Song updatedSong) {
+//
+//        Song existingSong = songService.getSongById(id);
+//        System.out.println("DEBUG: User ID: " + userId + ", Song Artist ID: " + existingSong.getArtistId());
+//
+//        // Check ownership
+//        String existingArtistId = String.valueOf(existingSong.getArtistId());
+//        String currentUserId = String.valueOf(userId);
+//        System.out.println("DEBUG: User ID: " + currentUserId + ", Song Artist ID: " + existingArtistId);
+//        boolean isOwner = currentUserId.equals(existingArtistId);
+//        System.out.println("DEBUG: Ownership Check Result: " + isOwner);
+//
+//        if (!isOwner) {
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+//                    .body("You can only update your own songs");
+//        }
+//
+//        // Keep the original artist ID (as the request body might not contain it)
+//        updatedSong.setArtistId(existingSong.getArtistId());
+//
+//        return ResponseEntity.ok(songService.updateSong(id,updatedSong));
+//    }
 
     /**
      * Endpoint to update a song's details, including optional files.

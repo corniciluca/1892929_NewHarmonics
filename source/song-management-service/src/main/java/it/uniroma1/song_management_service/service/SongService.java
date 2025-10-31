@@ -177,22 +177,23 @@ public class SongService {
         return songRepository.findById(id).orElseThrow();
     }
 
-    public Song updateSong(String id, Song updatedSong) {
-        Song existingSong = songRepository.findById(id).orElseThrow();
-
-        if (updatedSong.getTitle() != null && !updatedSong.getTitle().isBlank()) {
-            existingSong.setTitle(updatedSong.getTitle());
-        }
-        if (updatedSong.getAlbum() != null && !updatedSong.getAlbum().isBlank()) {
-            existingSong.setAlbum(updatedSong.getAlbum());
-        }
-        if (updatedSong.getGenre() != null && !updatedSong.getGenre().isBlank()) {
-            existingSong.setGenre(updatedSong.getGenre());
-        }
-
-        indexSongInElasticsearch(existingSong);
-        return songRepository.save(existingSong);
-    }
+//      UNUSED
+//    public Song updateSong(String id, Song updatedSong) {
+//        Song existingSong = songRepository.findById(id).orElseThrow();
+//
+//        if (updatedSong.getTitle() != null && !updatedSong.getTitle().isBlank()) {
+//            existingSong.setTitle(updatedSong.getTitle());
+//        }
+//        if (updatedSong.getAlbum() != null && !updatedSong.getAlbum().isBlank()) {
+//            existingSong.setAlbum(updatedSong.getAlbum());
+//        }
+//        if (updatedSong.getGenre() != null && !updatedSong.getGenre().isBlank()) {
+//            existingSong.setGenre(updatedSong.getGenre());
+//        }
+//
+//        indexSongInElasticsearch(existingSong);
+//        return songRepository.save(existingSong);
+//    }
 
     /**
      * Updates a song's details, and optionally replaces its audio or cover image.

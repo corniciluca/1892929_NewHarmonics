@@ -33,12 +33,15 @@ export async function uploadSong({ file, title, artist, artistId, album, genre, 
   });
 }
 
-export async function updateSong(id, song) {
-  return apiRequest(`/songs/${id}`, {
-    method: "PUT",
-    body: JSON.stringify(song), // apiRequest will set 'Content-Type: json'
-  });
-}
+
+/* UNUSED
+    export async function updateSong(id, song) {
+      return apiRequest(`/songs/${id}`, {
+        method: "PUT",
+        body: JSON.stringify(song), // apiRequest will set 'Content-Type: json'
+      });
+    }
+*/
 
 /**
  * Updates a song's details, including optional audio and cover files.
