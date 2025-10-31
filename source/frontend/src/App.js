@@ -126,7 +126,7 @@ function App() {
           path="/dashboard" 
           element={isLoggedIn ? <Dashboard currentUser={currentUser} /> : <Navigate to="/login" />} 
         />
-        <Route path="/search" element={<SearchResults />} />
+        <Route path="/search" element={<SearchResults currentUser={currentUser}/>} />
         <Route 
           path="/following" 
           element={isLoggedIn ? <Following currentUser={currentUser} /> : <Navigate to="/login" />} 

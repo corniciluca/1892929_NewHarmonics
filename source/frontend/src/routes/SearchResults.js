@@ -6,7 +6,7 @@ import { getUserById } from '../api/userApi';
 import SongList from '../components/SongList';
 import ArtistCard from '../components/ArtistCard';
 
-export default function SearchResults() {
+export default function SearchResults({ currentUser }) {
   const [searchParams] = useSearchParams();
   const q = searchParams.get('q') || '';
 
@@ -107,7 +107,7 @@ export default function SearchResults() {
 
           <Box sx={{ mt: 2 }}>
             <Typography variant="h6" sx={{ mb: 2 }}>Songs</Typography>
-            <SongList songs={songs} />
+            <SongList songs={songs} currentUser={currentUser} />
           </Box>
         </>
       )}
