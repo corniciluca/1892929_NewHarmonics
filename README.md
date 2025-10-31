@@ -17,8 +17,8 @@ TODO:
 - [x] Notifications
 - [x] Add album cover and clickable artist to SongPlayer
 - [x] Following section in main page - Alessandro
-- [ ] Confirmation on song edit/delete - Onorio
-- [ ] Song details - Onorio
-- [ ] Pictures - Onorio
-- [ ] Likes - Alessandro
-- [ ] Fix song progress bar
+- [x] Confirmation on song edit/delete - Onorio
+- [x] Song details - Onorio
+- [x] Pictures - Onorio
+- [x] Likes - Alessandro
+- [x] Fix song progress bar
