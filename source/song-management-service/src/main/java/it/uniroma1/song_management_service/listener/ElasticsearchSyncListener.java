@@ -19,7 +19,7 @@ public class ElasticsearchSyncListener {
     private SongSearchService searchService;
     
     // Listen for song uploads
-    @RabbitListener(queues = RabbitMQConstants.SONG_UPLOADED_ROUTING_KEY)
+    @RabbitListener(queues = RabbitMQConstants.SONG_INDEX_QUEUE)
     public void handleSongUploaded(Song song) {
         // Convert MongoDB Song to Elasticsearch SongDocument
         SongDocument doc = new SongDocument(

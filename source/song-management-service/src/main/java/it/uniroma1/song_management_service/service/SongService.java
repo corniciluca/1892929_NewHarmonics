@@ -10,6 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import java.io.IOException;
@@ -17,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class SongService {
@@ -64,13 +68,28 @@ public class SongService {
         
         Song savedSong = songRepository.save(song);
         indexSongInElasticsearch(savedSong);
-
-        // Send notification to RabbitMQ
-        String message = "New song uploaded by " + artist + ": " + title;
-        rabbitTemplate.convertAndSend(RabbitMQConstants.MUSIC_EXCHANGE, RabbitMQConstants.SONG_UPLOADED_ROUTING_KEY, message);
-
-        System.out.println("📤 Sent message to RabbitMQ: " + message);
-        log.info("📤 Sent message to RabbitMQ: " + message);
+        
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> eventData = Map.of(
+                    "artistId", artistId,
+                    "artistName", artist,
+                    "songTitle", title,
+                    "songId", savedSong.getId(),
+                    "coverUrl", coverObjectName
+            );
+            
+            String message = objectMapper.writeValueAsString(eventData);
+            rabbitTemplate.convertAndSend(
+                    RabbitMQConstants.MUSIC_EXCHANGE, 
+                    RabbitMQConstants.SONG_UPLOADED_ROUTING_KEY,
+                    message
+            );
+                
+                log.info("📤 Sent rich event to RabbitMQ for song: {}", title);
+            } catch (Exception e) {
+                log.error("Failed to send notification event", e);
+            }
 
         return savedSong;
     }

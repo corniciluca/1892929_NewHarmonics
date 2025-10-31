@@ -35,6 +35,13 @@ public class UserController {
         return assembler.toCollectionModel(users);
     }
 
+
+    @GetMapping("/{artistId}/followers")
+    public ResponseEntity<Set<UserEntity>> getFollowers(@PathVariable Long artistId) {
+        Set<UserEntity> followers = followService.getFollowers(artistId);
+        return ResponseEntity.ok(followers);
+    }
+    
     // Returns user {id}
     @GetMapping("/{id}")
     public EntityModel<UserEntity> getOneUser(@PathVariable("id") Long id) {

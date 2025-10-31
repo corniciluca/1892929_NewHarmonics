@@ -98,8 +98,9 @@ function App() {
   return (
     <PlayerProvider currentUser={currentUser}>
       <Router>
-        <Navbar isLoggedIn={isLoggedIn} onLogout={handleLogout} isArtist={isArtist} />
+        <Navbar currentUser={currentUser} isLoggedIn={isLoggedIn} onLogout={handleLogout} isArtist={isArtist} />
         <Routes>
+          
         <Route path="/" element={<Home currentUser={currentUser} />} />
         <Route 
           path="/login" 
@@ -140,7 +141,7 @@ function App() {
         />
         <Route 
           path="/notifications" 
-          element={isLoggedIn ? <Notification /> : <Navigate to="/login" />} 
+          element={isLoggedIn ? <Notification currentUser={currentUser}/> : <Navigate to="/login" />} 
         />
 
         <Route 

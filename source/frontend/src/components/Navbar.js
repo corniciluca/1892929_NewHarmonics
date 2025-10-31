@@ -5,9 +5,10 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import SearchIcon from '@mui/icons-material/Search';
 import { Link, useNavigate } from 'react-router-dom';
+import NotificationBell from './NotificationBell'; // Adjust path as needed
 
 // 1. ACCETTA LE PROPS (isLoggedIn, isArtist, onLogout)
-export default function Navbar({ isLoggedIn, isArtist, onLogout }) {
+export default function Navbar({ currentUser,isLoggedIn, isArtist, onLogout }) {
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
 
@@ -57,9 +58,7 @@ export default function Navbar({ isLoggedIn, isArtist, onLogout }) {
                   <AddCircleOutlineIcon fontSize="large" />
                 </IconButton>
               )}
-              <IconButton component={Link} to="/notification" color="inherit" title="Notifications">
-                <NotificationsIcon fontSize="large"/>
-              </IconButton>
+              {currentUser && <NotificationBell currentUser={currentUser} />}
               <IconButton component={Link} to="/profile" color="inherit" title="Profile">
                 <AccountCircleIcon fontSize="large"/>
               </IconButton>

@@ -4,7 +4,9 @@ import it.uniroma1.user_service.model.UserEntity;
 import it.uniroma1.user_service.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class FollowService {
@@ -40,4 +42,13 @@ public class FollowService {
         user.getFollowedArtists().remove(artist);
         userRepository.save(user);
     }
+
+    public Set<UserEntity> getFollowers(Long artistId) {
+    // Find all users who follow this artist
+    List<UserEntity> allUsers = userRepository.findAll();
+    return allUsers.stream()
+            .filter(user -> user.getFollowedArtists().stream()
+                    .anyMatch(artist -> artist.getId().equals(artistId)))
+            .collect(Collectors.toSet());
+}
 }

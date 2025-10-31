@@ -7,6 +7,25 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
+
+    @Bean
+    public Queue songIndexQueue() {
+        return new Queue(RabbitMQConstants.SONG_INDEX_QUEUE, true); // durable queue
+    }
+
+    @Bean
+    public TopicExchange songIndexExchange() {
+        return new TopicExchange(RabbitMQConstants.INDEX_EXCHANGE);
+    }
+
+    @Bean
+    public Binding songIndexBinding(Queue songIndexQueue, TopicExchange songIndexExchange) {
+        return BindingBuilder
+                .bind(songIndexQueue)
+                .to(songIndexExchange)
+                .with(RabbitMQConstants.SONG_INDEX_ROUTING_KEY);
+    }
+    
     @Bean
     public TopicExchange musicExchange() {       // for receiving song upload messages
         return new TopicExchange(RabbitMQConstants.MUSIC_EXCHANGE);
