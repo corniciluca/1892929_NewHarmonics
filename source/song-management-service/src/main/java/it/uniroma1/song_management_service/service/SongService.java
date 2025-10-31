@@ -5,11 +5,16 @@ import it.uniroma1.song_management_service.model.Song;
 import it.uniroma1.song_management_service.model.SongDocument;
 import it.uniroma1.song_management_service.repository.SongRepository;
 import it.uniroma1.song_management_service.repository.SongSearchRepository;
-import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Objects;
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.AudioHeader;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -49,6 +54,33 @@ public class SongService {
     }
 
     public Song uploadSong(MultipartFile audioFile, MultipartFile coverImageFile, String title, String artist, Long artistId, String album, String genre) throws IOException {
+
+        // --- 1. Calculate Duration ---
+        File tempAudioFile = null;
+        int durationInSeconds = 0;
+        try {
+            // Create a temporary file to analyze
+            tempAudioFile = File.createTempFile("upload-", "-" + audioFile.getOriginalFilename());
+            try (FileOutputStream fos = new FileOutputStream(tempAudioFile)) {
+                fos.write(audioFile.getBytes());
+            }
+
+            // Read the audio file's metadata
+            AudioFile f = AudioFileIO.read(tempAudioFile);
+            AudioHeader header = f.getAudioHeader();
+            durationInSeconds = header.getTrackLength(); // This gives duration in seconds
+
+        } catch (Exception e) {
+            log.error("Could not read audio file duration", e);
+            // We'll proceed with 0, but log the error
+        } finally {
+            // Clean up the temporary file
+            if (tempAudioFile != null && tempAudioFile.exists()) {
+                tempAudioFile.delete();
+            }
+        }
+        // --- End of Duration Calculation ---
+
         // Upload files to MinIO and get their object names
         String audioObjectName = minioService.uploadFile(audioFile);
         String coverObjectName = minioService.uploadFile(coverImageFile);
@@ -64,7 +96,7 @@ public class SongService {
         song.setCoverImageUrl(coverObjectName); // Store MinIO object name
         song.setPlayCount(0L);
         song.setUploadDate(LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
-        song.setDurationSeconds(0); // You can calculate this later if needed
+        song.setDurationSeconds(durationInSeconds); // You can calculate this later if needed
         
         Song savedSong = songRepository.save(song);
         indexSongInElasticsearch(savedSong);
@@ -173,10 +205,10 @@ public class SongService {
         doc.setGenre(song.getGenre());
         doc.setCoverImageUrl(song.getCoverImageUrl());
         doc.setPlayCount(song.getPlayCount());
+        doc.setDurationSeconds(song.getDurationSeconds());
         // Convert LocalDateTime to OffsetDateTime with system default zone
         LocalDateTime ldt = song.getUploadDate() != null ? song.getUploadDate() : LocalDateTime.now();
         doc.setUploadDate(ldt.atZone(ZoneId.systemDefault()).toOffsetDateTime());
-        doc.setPlayCount(song.getPlayCount());
         doc.setLikedBy(song.getLikedBy());
 
         if(searchRepository.findById(doc.getId()).isPresent()) {

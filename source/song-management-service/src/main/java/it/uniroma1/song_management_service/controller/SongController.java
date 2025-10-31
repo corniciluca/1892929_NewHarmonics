@@ -32,10 +32,20 @@ public class SongController {
     @GetMapping("/{id}/download")
     public ResponseEntity<byte[]> downloadSong(@PathVariable String id) throws IOException {
         byte[] data = songService.downloadSong(id);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"song.mp3\"")
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(data);
+
+        // 1. Set the correct audio content type (e.g., MP3)
+        //    (You might want to make this dynamic later if you support .ogg or .wav)
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("audio/mpeg"));
+
+        // 2. Tell the browser the total length so it can build the seek bar
+        headers.setContentLength(data.length);
+
+        // 3. Tell the browser that we accept seek requests (byte ranges)
+        headers.set("Accept-Ranges", "bytes");
+
+        // 4. Return the data with the new streaming-friendly headers
+        return new ResponseEntity<>(data, headers, HttpStatus.OK);
     }
 
     @GetMapping("/{id}/cover")
@@ -64,13 +74,13 @@ public class SongController {
                 .contentType(MediaType.parseMediaType(contentType))
                 .body(data);
     }
-    
+
     @GetMapping("/{id}")
     public ResponseEntity<Song> getSongById(@PathVariable String id) {
         return ResponseEntity.ok(songService.getSongById(id));
     }
 
-    
+
     // ARTIST ONLY - Upload song
 
     // Uploads a song
@@ -85,7 +95,7 @@ public class SongController {
             @RequestParam("genre") String genre,
             @RequestHeader("X-User-Id") String userId,
             @RequestHeader("X-User-Role") String role
-            ) {
+    ) {
         if (!"ARTIST".equals(role)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body("Only artists can upload songs");

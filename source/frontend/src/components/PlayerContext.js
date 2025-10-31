@@ -11,9 +11,9 @@ export function PlayerProvider({ children, currentUser }) {
   const [volume, setVolume] = useState(1);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
-
-  // --- 1. ADD NEW STATE FOR MODAL ---
   const [detailSong, setDetailSong] = useState(null); // null = closed, song = open
+  const [isSeeking, setIsSeeking] = useState(false);
+  const wasPlayingRef = useRef(false);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -23,7 +23,11 @@ export function PlayerProvider({ children, currentUser }) {
     // allow cross-origin media if your files are served from another host
     audio.crossOrigin = 'anonymous';
 
-    const onTime = () => setProgress(audio.currentTime || 0);
+    const onTime = () => {
+      if (!isSeeking) {
+        setProgress(audio.currentTime || 0);
+      }
+    };
     const onDuration = () => setDuration(audio.duration || 0);
     const onEnded = () => setIsPlaying(false);
 
@@ -37,7 +41,7 @@ export function PlayerProvider({ children, currentUser }) {
       audio.removeEventListener('ended', onEnded);
       try { audio.pause(); } catch(e) {}
     };
-  }, []);
+  }, [isSeeking]);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -95,10 +99,31 @@ export function PlayerProvider({ children, currentUser }) {
   };
 
   const seek = (time) => {
-    if (!audioRef.current) return;
-    audioRef.current.currentTime = time;
-    setProgress(time);
-  };
+          if (!audioRef.current) return;
+          audioRef.current.currentTime = time;
+          setProgress(time);
+          setIsSeeking(false);
+
+          // Wrap the play() call in a timeout to let the pause() promise finish
+          if (wasPlayingRef.current) {
+            setTimeout(() => {
+              if (audioRef.current) {
+                audioRef.current.play();
+                setIsPlaying(true);
+              }
+            }, 0); // 0ms is enough to push it to the next event loop
+          }
+        };
+
+  const startSeek = () => {
+        if (!audioRef.current) return;
+        // Store whether the song is *currently* playing
+        wasPlayingRef.current = isPlaying;
+        setIsSeeking(true);
+        // Pause the audio *while* seeking to prevent stutter
+        audioRef.current.pause();
+        setIsPlaying(false); // Sync the state
+      };
 
   const openSongDetail = (song) => {
     setDetailSong(song);
@@ -111,7 +136,7 @@ export function PlayerProvider({ children, currentUser }) {
   return (
     <PlayerContext.Provider value={{
       currentSong, setCurrentSong, isPlaying, playSong, togglePlay,
-      volume, setVolume, progress, duration, seek, detailSong, openSongDetail, closeSongDetail, currentUser
+      volume, setVolume, progress, duration, seek, detailSong, openSongDetail, closeSongDetail, currentUser, startSeek, isSeeking
     }}>
       {children}
     </PlayerContext.Provider>

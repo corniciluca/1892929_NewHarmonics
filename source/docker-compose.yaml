@@ -1,5 +1,3 @@
-version: '3.8'
-
 # Define a common template for services to avoid repetition
 x-base-service: &base-service
   restart: unless-stopped
