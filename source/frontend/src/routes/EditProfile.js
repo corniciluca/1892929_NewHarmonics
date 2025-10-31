@@ -22,20 +22,20 @@ export default function EditProfile({ user, onUserUpdate }) {
     try {
       const updatedUser = await updateUser(user.id, { username, email });
       onUserUpdate(updatedUser); // Aggiorna lo stato globale dell'app
-      setSuccess('Profilo aggiornato con successo!');
+      setSuccess('Profile updated successfully');
     } catch (err) {
-      setError(err.message || 'Errore durante l\'aggiornamento.');
+      setError(err.message || 'Error during update!');
     }
   };
 
   const handleDeleteAccount = async () => {
     try {
         await deleteUser(user.id);
-        alert('Account eliminato con successo.');
+        alert('Account deleted successfully.');
         logout();
         navigate('/login');
     } catch (err) {
-        setError(err.message || 'Impossibile eliminare l\'account.');
+        setError(err.message || 'Unable to delete account!');
     }
     setOpenDeleteDialog(false);
   };
@@ -67,7 +67,7 @@ export default function EditProfile({ user, onUserUpdate }) {
              onChange={(e) => setEmail(e.target.value)}
              fullWidth
            />
-           <Button variant="contained" onClick={handleUpdate}>Salva Modifiche</Button>
+           <Button variant="contained" onClick={handleUpdate}>Save changes</Button>
         </Stack>
 
         <Box sx={{ display:"flex", justifyContent:"center", gap:3, mt:4, borderTop: '1px solid #ddd', pt: 3 }}>
@@ -76,23 +76,23 @@ export default function EditProfile({ user, onUserUpdate }) {
             color="error"
             onClick={() => setOpenDeleteDialog(true)}
           >
-            Elimina Account
+            Delete Account
           </Button>
         </Box>
       </Paper>
 
       {/* Dialog di conferma eliminazione */}
       <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
-        <DialogTitle>Conferma Eliminazione Account</DialogTitle>
+        <DialogTitle>Confirm Account Deletion</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Sei sicuro di voler eliminare il tuo account? Questa azione è irreversibile.
+            Are you sure you want to delete your account? This action is irreversible.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDeleteDialog(false)}>Annulla</Button>
+          <Button onClick={() => setOpenDeleteDialog(false)}>Cancel</Button>
           <Button onClick={handleDeleteAccount} color="error">
-            Elimina
+            Delete
           </Button>
         </DialogActions>
       </Dialog>
