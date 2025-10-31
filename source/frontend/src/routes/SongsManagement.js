@@ -1,18 +1,22 @@
-import React, { useEffect, useState } from "react"; // 1. Assicurati che 'useState' sia importato
+import React, { useEffect, useState } from "react";
 import {
-  Container, Typography, Box, Paper, Avatar, Button, Stack,
-  // 2. Importa i componenti del Dialog
-  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
+  Container, Typography, Box, Paper, Avatar, Button,
+  // 1. Import Dialog components (already present)
+  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
+  
+  // 2. Import Table components and new Icon
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow
 } from "@mui/material";
-import ImageIcon from "@mui/icons-material/Image";
+import MusicNoteIcon from "@mui/icons-material/MusicNote"; // Replaced ImageIcon
 import { useNavigate } from "react-router-dom";
 import { getSongsByArtistId, deleteSong } from "../api/songApi";
+
+// 3. Define the gateway URL to build image paths
+const gateway = process.env.REACT_APP_API_GATEWAY_URL || 'http://localhost:9000';
 
 export default function SongsManagement({ currentUser }) {
   const [songs, setSongs] = useState([]);
   const navigate = useNavigate();
-
-  // 3. Aggiungi i nuovi stati per il Dialog
   const [openDialog, setOpenDialog] = useState(false);
   const [songToDeleteId, setSongToDeleteId] = useState(null);
 
@@ -23,66 +27,105 @@ export default function SongsManagement({ currentUser }) {
   }, [currentUser]);
 
   const handleEdit = id => { navigate(`/edit-song/${id}`); };
-
-  // 4. Questa funzione ora apre solo il dialog
   const handleDeleteClick = (id) => {
-    setSongToDeleteId(id); // Salva l'ID della canzone
-    setOpenDialog(true);  // Apri il dialog
+    setSongToDeleteId(id);
+    setOpenDialog(true);
   };
-
-  // 5. Questa funzione chiude il dialog
   const handleCloseDialog = () => {
     setOpenDialog(false);
-    setSongToDeleteId(null); // Pulisci l'ID
+    setSongToDeleteId(null);
   };
-
-  // 6. Questa è la vecchia logica di 'handleDelete', ora chiamata dalla conferma
   const handleConfirmDelete = async () => {
     if (songToDeleteId) {
       await deleteSong(songToDeleteId);
       setSongs(songs => songs.filter(s => s.id !== songToDeleteId));
-      handleCloseDialog(); // Chiudi il dialog dopo l'eliminazione
+      handleCloseDialog();
     }
   };
 
   return (
     <Container maxWidth="md" sx={{ mt: 8, mb: 8 }}>
+      {/* 4. Updated Header to use real user data */}
       <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mb: 4 }}>
         <Avatar sx={{ width: 96, height: 96, bgcolor: "#7e57c2", mb: 2 }}>
-          <ImageIcon sx={{ fontSize: 70, color: "#fff" }} />
+          <Typography variant="h2" sx={{ color: "#fff" }}>
+            {currentUser?.username.charAt(0).toUpperCase()}
+          </Typography>
         </Avatar>
-        <Typography variant="h5" fontWeight={700}>Username</Typography>
+        <Typography variant="h5" fontWeight={700}>{currentUser?.username}</Typography>
       </Box>
       <Typography variant="h4" align="center" fontWeight={700} mb={4}>
-        Latest Uploads
+        Manage Your Songs
       </Typography>
-      <Stack spacing={3} sx={{ maxHeight: 420, overflowY: 'auto', px:2 }}>
-        {songs.map(song => (
-          <Paper key={song.id} elevation={3}
-            sx={{
-              borderRadius: 6, display: "flex", alignItems: "center",
-              px: 4, py: 2, justifyContent: "space-between"
-            }}>
-            <Box sx={{ display:"flex", alignItems:"center" }}>
-              <Avatar sx={{ width: 64, height: 64, bgcolor: "#ede7f6", mr: 2 }}>
-                <ImageIcon sx={{ color: "#7e57c2", fontSize:36 }}/>
-              </Avatar>
-              <Typography fontSize={22} fontWeight={600}>{song.title}</Typography>
-            </Box>
-            <Box sx={{ display:"flex", gap:2 }}>
-              <Button variant="contained" color="primary" sx={{ borderRadius:2, minWidth:90 }} onClick={()=>handleEdit(song.id)}>
-                Edit
-              </Button>
-              {/* 7. Aggiorna l'onClick per chiamare la nuova funzione */}
-              <Button variant="contained" color="error" sx={{ borderRadius:2, minWidth:90 }} onClick={()=>handleDeleteClick(song.id)}>
-                Delete
-              </Button>
-            </Box>
-          </Paper>
-        ))}
-      </Stack>
+      
+      {/* 5. Replaced Stack with a Table for better management */}
+      <TableContainer component={Paper} elevation={3} sx={{ borderRadius: 6 }}>
+        <Table sx={{ minWidth: 650 }}>
+          <TableHead>
+            <TableRow>
+              <TableCell sx={{ fontWeight: 600, fontSize: '1rem' }}>Song</TableCell>
+              <TableCell sx={{ fontWeight: 600, fontSize: '1rem' }}>Album</TableCell>
+              <TableCell sx={{ fontWeight: 600, fontSize: '1rem' }}>Genre</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 600, fontSize: '1rem' }}>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {songs.map((song) => {
+              // Build the cover image URL
+              const coverImageUrl = song.coverImageUrl ? `${gateway}/songs/${song.id}/cover` : null;
 
-      {/* 8. Aggiungi il componente Dialog qui */}
+              return (
+                <TableRow
+                  key={song.id}
+                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                >
+                  {/* Song Cell (Image + Title/Artist) */}
+                  <TableCell component="th" scope="row">
+                    <Box sx={{ display:"flex", alignItems:"center" }}>
+                      <Avatar 
+                        variant="rounded"
+                        sx={{ width: 56, height: 56, bgcolor: "#ede7f6", mr: 2 }}
+                        src={coverImageUrl} // Use src property
+                      >
+                        {/* Fallback Icon */}
+                        {!coverImageUrl && <MusicNoteIcon sx={{ color: "#7e57c2", fontSize: 36 }}/>}
+                      </Avatar>
+                      <Box>
+                        <Typography fontSize={18} fontWeight={600}>{song.title}</Typography>
+                        <Typography variant="body2" color="text.secondary">{song.artist}</Typography>
+                      </Box>
+                    </Box>
+                  </TableCell>
+                  
+                  {/* Album Cell */}
+                  <TableCell>
+                    <Typography>{song.album}</Typography>
+                  </TableCell>
+                  
+                  {/* Genre Cell */}
+                  <TableCell>
+                    <Typography>{song.genre}</Typography>
+                  </TableCell>
+                  
+                  {/* Actions Cell */}
+                  <TableCell align="right">
+                    <Box sx={{ display:"flex", gap: 1, justifyContent: 'flex-end' }}>
+                      <Button variant="contained" color="primary" sx={{ borderRadius:2 }} onClick={()=>handleEdit(song.id)}>
+                        Edit
+                      </Button>
+                      <Button variant="contained" color="error" sx={{ borderRadius:2 }} onClick={()=>handleDeleteClick(song.id)}>
+                        Delete
+                      </Button>
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      {/* Delete Confirmation Dialog (already correct) */}
       <Dialog
         open={openDialog}
         onClose={handleCloseDialog}
