@@ -14,7 +14,8 @@ Work in progress:
 
 TODO:
 - [x] Follow from frontend - Alessandro
-- [ ] Notifications
+- [x] Notifications
+- [x] Add album cover and clickable artist to SongPlayer
 - [x] Following section in main page - Alessandro
 - [ ] Confirmation on song edit/delete - Onorio
 - [ ] Song details - Onorio
