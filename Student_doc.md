@@ -138,19 +138,19 @@ This container does not connect to any extrnal service.
     "songs":
         [
             {
-              _id: ,
-              title: ...,
-              artist: ...,
-              artistId: ...,
-              album: ..,
-              genre: ..,
-              fileUrl: ...,
-              coverImageUrl: ...,
-              playCount: ...,
-              durationSeconds: ...,
-              uploadDate: ...,
-              likedBy: [ userId, userId, ... ],
-              _class: ...
+              "_id": ,
+              "title": ...,
+              "artist": ...,
+              "artistId": ...,
+              "album": ...,
+              "genre": ...,
+              "fileUrl": ...,
+              "coverImageUrl": ...,
+              "playCount": ...,
+              "durationSeconds": ...,
+              "uploadDate": ...,
+              "likedBy": [ userId, userId, ... ],
+              "_class": ...
             },
           ...
         ]
