@@ -6,7 +6,7 @@ New Harmonics is a music sharing web app where users can register either as arti
 2. As a registered user, I want to edit my profile (name, email, password), so that it reflects my preferences. 
 3. As a registered user, I want to delete my account, so that I can permanently remove my profile and songs.
 4. As a registered user who is logged out, I want to log in, so that I can access all the features.  
-5 As a registered logged-in user, I want to log out, so that I can leave the application securely.  
+5. As a registered logged-in user, I want to log out, so that I can leave the application securely.  
 6. As a user, I want to view the Home Page, so that I can explore the newest and most popular uploaded songs.  
 7. As a registered user, I want to follow an artist, so that I can quickly accessa their profiles and music.
 8. As a registered user, I want to unfollow an artist, so that I remove them from my following list
@@ -64,20 +64,20 @@ This container does not connect to any external service.
     | ... | ... | ... | ... |
 
 - PAGES: <put this bullet point only in the case of frontend and fill the following table>
-
-	| Name 			| Description 		| Related Microservice 		| User Stories |
-	| ------------- | ----------------- | ------------------------- | ------------ |
-	| Home 			| Home page   		| 							| 			   |
-	| Register		| Sign up page 		|
-	| Login			| Log in page		|
-	| UserProfile 	| Profile page		| 							|			   |
-	| EditProfile
-	| Feed			| Feed page			| 							|			   |
-	| Upload 		| Song upload form 	|
-	| SongEdit		| Song editing form |
-	| SongsManagement |
-	| SearchResults |
-	| Following		|
+    
+    | Name            | Description            | Related Microservice | User Stories |
+    |-----------------|------------------------|----------------------|--------------|
+    | Home            | Home page              |                      |              |
+    | Register        | Sign up page           |                      |              |
+    | Login           | Log in page            |                      |              |
+    | UserProfile     | Profile page           |                      |              |
+    | EditProfile     | Profile editing form   |                      |              |
+    | Feed            | Feed page              |                      |              |
+    | Upload          | Song upload form       |                      |              |
+    | SongEdit        | Song editing form      |                      |              |
+    | SongsManagement | Song editing page      |                      |              |
+    | SearchResults   | Landing page of search |                      |              |
+    | Following       | Followed artists page  |                      |              |
 
 - DB STRUCTURE: <put this bullet point only in the case a DB is used in the microservice and specify the structure of the tables and columns>
 
@@ -118,39 +118,41 @@ This container does not connect to any extrnal service.
   		- model, to handle data represantion of each song object.
 
 - ENDPOINTS:
-		
-	| HTTP METHOD | URL 							| Description 												| User Stories 			|
-	| ----------- | --- 							| ----------- 												| ------------ 			|
-	| GET		  | /songs/{id}						| Fetches a song
-    | GET		  | /songs/{id}/download			| Downloads a song
-  	| GET		  | /songs/{id}/cover				| Fetches the cover image of a song
-    | POST		  | /songs/upload					| Uploads a song
-  	| POST		  | /songs/{id}/update				| Updates a song
-  	| DELETE	  | /songs/{id}						| Deletes a song
-  	| GET		  | /songs/artist/{artistId}		| Fetches all songs by an artist
-	| POST		  | /songs/{id}/like				| Likes a song
-	| DELETE	  | /songs/{id}/like				| Unlikes a song
-	| GET		  | /songs/liked					| Fetches all the songs liked by the current user
+    		
+    | HTTP METHOD | URL                      | Description                                     | User Stories |
+    |-------------|--------------------------|-------------------------------------------------|--------------|
+    | GET         | /songs/{id}              | Fetches a song                                  |              |
+    | GET         | /songs/{id}/download     | Downloads a song                                |              |
+    | GET         | /songs/{id}/cover        | Fetches the cover image of a song               |              |
+    | POST        | /songs/upload            | Uploads a song                                  |              |
+    | POST        | /songs/{id}/update       | Updates a song                                  |              |
+    | DELETE      | /songs/{id}              | Deletes a song                                  |              |
+    | GET         | /songs/artist/{artistId} | Fetches all songs by an artist                  |              |
+    | POST        | /songs/{id}/like         | Likes a song                                    |              |
+    | DELETE      | /songs/{id}/like         | Unlikes a song                                  |              |
+    | GET         | /songs/liked             | Fetches all the songs liked by the current user |              |
 
 - DB STRUCTURE:
-	{
-	  songs:
-		  [
-			  {
-			    _id: ,
-			    title: ...,
-			    artist: ...,
-			    artistId: ...,
-			    album: ..,
-			    genre: ..,
-			    fileUrl: ...,
-			    coverImageUrl: ...,
-			    playCount: ...,
-			    durationSeconds: ...,
-			    uploadDate: ...,
-			    likedBy: [ userId, userId, ... ],
-			    _class: ...
-			  },
-			...
-		  ]
-	  }
+    ```json
+    {
+      songs:
+          [
+              {
+                _id: ,
+                title: ...,
+                artist: ...,
+                artistId: ...,
+                album: ..,
+                genre: ..,
+                fileUrl: ...,
+                coverImageUrl: ...,
+                playCount: ...,
+                durationSeconds: ...,
+                uploadDate: ...,
+                likedBy: [ userId, userId, ... ],
+                _class: ...
+              },
+            ...
+          ]
+      }
+    ```

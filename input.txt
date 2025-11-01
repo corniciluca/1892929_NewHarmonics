@@ -8,7 +8,7 @@ New Harmonics is a music sharing web app where users can register either as arti
 2. As a registered user, I want to edit my profile (name, email, password), so that it reflects my preferences. 
 3. As a registered user, I want to delete my account, so that I can permanently remove my profile and songs.
 4. As a registered user who is logged out, I want to log in, so that I can access all the features.  
-5 As a registered logged-in user, I want to log out, so that I can leave the application securely.  
+5. As a registered logged-in user, I want to log out, so that I can leave the application securely.
 6. As a user, I want to view the Home Page, so that I can explore the newest and most popular uploaded songs.  
 7. As a registered user, I want to follow an artist, so that I can quickly accessa their profiles and music.
 8. As a registered user, I want to unfollow an artist, so that I remove them from my following list
