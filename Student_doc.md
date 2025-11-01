@@ -133,26 +133,26 @@ This container does not connect to any extrnal service.
     | GET         | /songs/liked             | Fetches all the songs liked by the current user |              |
 
 - DB STRUCTURE:
-    ```json
-    {
-      songs:
-          [
-              {
-                _id: ,
-                title: ...,
-                artist: ...,
-                artistId: ...,
-                album: ..,
-                genre: ..,
-                fileUrl: ...,
-                coverImageUrl: ...,
-                playCount: ...,
-                durationSeconds: ...,
-                uploadDate: ...,
-                likedBy: [ userId, userId, ... ],
-                _class: ...
-              },
-            ...
-          ]
-      }
-    ```
+  ```json
+  {
+    "songs":
+        [
+            {
+              _id: ,
+              title: ...,
+              artist: ...,
+              artistId: ...,
+              album: ..,
+              genre: ..,
+              fileUrl: ...,
+              coverImageUrl: ...,
+              playCount: ...,
+              durationSeconds: ...,
+              uploadDate: ...,
+              likedBy: [ userId, userId, ... ],
+              _class: ...
+            },
+          ...
+        ]
+    }
+```
