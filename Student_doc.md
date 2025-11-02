@@ -53,9 +53,9 @@ This container does not connect to any external service.
 - TECHNOLOGICAL SPECIFICATION: The frontend was realized with Node.js and starts a webserver on local port 3000.
 - SERVICE ARCHITECTURE:
   	The service uses three kind of files:
-  		- api, used to handle the logic of the requests;
-  		- components, used to display a specific key element of the page layout;
-  		- routes, used to contain the logic needed to display each page.
+    - api, used to handle the logic of the requests;
+    - components, used to display a specific key element of the page layout;
+    - routes, used to contain the logic needed to display each page.
 
 - ENDPOINTS: <put this bullet point only in the case of backend and fill the following table>
 		
@@ -101,7 +101,7 @@ Manages storage of song details, upload and deletion of songs.
 This container saves the details of the various uploaded songs in JSON format inside a MongoDB database.
 
 ### EXTERNAL SERVICES CONNECTIONS
-This container does not connect to any extrnal service.
+This container does not connect to any external service.
 
 ### MICROSERVICES:
 
@@ -112,11 +112,10 @@ This container does not connect to any extrnal service.
 - TECHNOLOGICAL SPECIFICATION: The service uses the SpringBoot API to implement CRUD operations in a RESTful manner. MongoDB is used to store JSON data and MinIO handles the storage.
 - SERVICE ARCHITECTURE:
   	The service uses four kind of files:
-  		- config, for configuring interaction with other services;
-  		- controller, to define the necessary endpoints;
-  		- service, to implement the logic of each endpoint;
-  		- model, to handle data represantion of each song object.
-
+    - config, for configuring interaction with other services;
+    - controller, to define the necessary endpoints;
+    - service, to implement the logic of each endpoint;
+    - model, to handle data representation of each song object.
 - ENDPOINTS:
     		
     | HTTP METHOD | URL                      | Description                                     | User Stories |
@@ -155,4 +154,135 @@ This container does not connect to any extrnal service.
           ...
         ]
     }
-```
+
+#### MICROSERVICE: Feed Service
+- TYPE: Backend
+- DESCRIPTION: Retrieves the feed of the current user
+- PORTS: 8082
+- TECHNOLOGICAL SPECIFICATION: The service retrieves data by sending a GET request to the User Service
+- SERVICE ARCHITECTURE:
+  	The service uses four kind of files:
+    - config, for configuring interaction with other services;
+    - controller, to define the necessary endpoints;
+    - service, to implement the logic of each endpoint;
+    - model, to handle data representation of each song object.
+
+- ENDPOINTS:
+    		
+    | HTTP METHOD | URL   | Description                           | User Stories |
+    |-------------|-------|---------------------------------------|--------------|
+    | GET         | /feed | Fetches the feed for the current user |              |
+
+#### MICROSERVICE: Song Search Service
+- TYPE: Backend
+- DESCRIPTION: Handles song search
+- PORTS: 8082
+- TECHNOLOGICAL SPECIFICATION: TODO
+- SERVICE ARCHITECTURE:
+  The service uses four kind of files:
+  - config, for configuring interaction with other services;
+  - controller, to define the necessary endpoints;
+  - service, to implement the logic of each endpoint;
+  - model, to handle data representation of each song object.
+
+- ENDPOINTS:
+
+  | HTTP METHOD | URL                         | Description | User Stories |
+  |-------------|-----------------------------|-------------|--------------|
+  | GET         | /songs/search               |             |              |
+  | POST        | /songs/search/reindex       |             |              |
+  | GET         | /songs/search/title         |             |              |
+  | GET         | /songs/search/genre/{genre} |             |              |
+  | GET         | /songs/search/trending      |             |              |
+  | GET         | /songs/search/recent        |             |              |
+
+## CONTAINER_NAME: mongo
+
+### DESCRIPTION:
+Manages storage of song details.
+
+### USER STORIES:
+<list of user stories satisfied>
+
+### PORTS:
+27017:27017
+
+### PERSISTENCE EVALUATION
+This holds the details of the various uploaded songs in JSON format inside a MongoDB database.
+
+### EXTERNAL SERVICES CONNECTIONS
+This container does not connect to any external service.
+
+### MICROSERVICES:
+
+#### MICROSERVICE: Song Management Service
+- Refer to Song Management Service in song-service container
+
+
+
+## CONTAINER_NAME: user-service
+
+### DESCRIPTION:
+Manages storage of user accounts.
+
+### USER STORIES:
+<list of user stories satisfied>
+
+### PORTS:
+8080:8080
+
+### PERSISTENCE EVALUATION
+This container saves the details of the accounts in an H2 database using a docker volume.
+
+### EXTERNAL SERVICES CONNECTIONS
+This container connects to an H2 database and the rabbitmq service.
+
+### MICROSERVICES:
+
+#### MICROSERVICE: User Service
+- TYPE: Backend
+- DESCRIPTION: Handles the logic related to the management of user accounts.
+- PORTS: 8080
+- TECHNOLOGICAL SPECIFICATION: The service uses the SpringBoot API to implement CRUD operations in a RESTful manner. H2 DB is used to store the data.
+- SERVICE ARCHITECTURE:
+  The service uses four kind of files:
+  - config, for configuring interaction with other services;
+  - controller, to define the necessary endpoints;
+  - service, to implement the logic of each endpoint;
+  - model, to handle data representation of each user object.
+- ENDPOINTS:
+
+  | HTTP METHOD | URL                         | Description                                      | User Stories |
+  |-------------|-----------------------------|--------------------------------------------------|--------------|
+  | GET         | /users                      | Fetches all users                                |              |
+  | GET         | /users/{id}                 | Fetches a single artist                          |              |
+  | POST        | /users                      | Creates a new user                               |              |
+  | PUT         | /users/{id}                 | Updates a user's details                         |              |
+  | DELETE      | /users/{id}                 | Deletes a user and all their songs               |              |
+
+
+- DB STRUCTURE:
+  **_USERS_** :	| **_ID_** | **_CREATED_AT_** | **_EMAIL_** | **_PASSWORD_** | **_ROLE_** | **_UPDATED_AT_** | **_USERNAME_** |
+
+#### MICROSERVICE: Follow Service
+- TYPE: Backend
+- DESCRIPTION: Handles the logic related to the following of user accounts.
+- PORTS: 8080
+- TECHNOLOGICAL SPECIFICATION: The service uses the SpringBoot API to implement CRUD operations in a RESTful manner. H2 DB is used to store the data.
+- SERVICE ARCHITECTURE:
+  The service uses four kind of files:
+    - config, for configuring interaction with other services;
+    - controller, to define the necessary endpoints;
+    - service, to implement the logic of each endpoint;
+    - model, to handle data representation of each user object.
+- ENDPOINTS:
+
+  | HTTP METHOD | URL                         | Description                                      | User Stories |
+  |-------------|-----------------------------|--------------------------------------------------|--------------|
+  | GET         | /users/{artistId}/followers | Fetches the followers of an artist               |              |
+  | GET         | /users/{id}/followed        | Fetches the followed artists of the current user |              |
+  | POST        | /users/follow/{artistId}    | Follows an artist                                |              |
+  | DELETE      | /users/unfollow/{artistId}  | Unfollows an artist                              |              |
+
+- DB STRUCTURE:
+  **_USER_FOLLOWS_** :	| **_FOLLOWER_ID_** | **_ARTIST_ID_** |
