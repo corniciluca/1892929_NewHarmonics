@@ -202,7 +202,6 @@ Manages song storage, metadata, upload/download, search functionality, and user 
         }
       ]
     }
-    ```
 
 #### MICROSERVICE: Feed Service
 - TYPE: Backend
@@ -243,29 +242,6 @@ Manages song storage, metadata, upload/download, search functionality, and user 
     | GET         | /songs/search/genre/{genre} | Filter by genre                  | 20           |
     | GET         | /songs/search/trending      | Get trending songs               | 6            |
     | GET         | /songs/search/recent        | Get recent uploads               | 6            |
-
-## CONTAINER_NAME: mongo
-
-### DESCRIPTION:
-Manages storage of song details.
-
-### USER STORIES:
-<list of user stories satisfied>
-
-### PORTS:
-27017:27017
-
-### PERSISTENCE EVALUATION
-This holds the details of the various uploaded songs in JSON format inside a MongoDB database.
-
-### EXTERNAL SERVICES CONNECTIONS
-This container does not connect to any external service.
-
-### MICROSERVICES:
-
-#### MICROSERVICE: Song Management Service
-- Refer to Song Management Service in song-service container
-
 
 
 ## CONTAINER_NAME: user-service
@@ -459,4 +435,5 @@ Queues and exchanges for events:
 
 ### EXTERNAL SERVICES CONNECTIONS
 Connected to by user-service, song-service, and notification-service.
+
 
