@@ -31,19 +31,24 @@ public class SecurityConfig {
                 )
                 .addFilterBefore(roleHeaderFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
+                    // Public GET routes
+                    .requestMatchers(HttpMethod.GET, "/songs/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/songs").permitAll()
 
-                        // Public Routes (Browsing)
-                        .requestMatchers(HttpMethod.GET, "/songs/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/songs").permitAll()
 
-                        // 🚨 The FIX: Use hasAuthority("ROLE_ARTIST") 🚨
-                        // Now explicitly checks for the authority string created in the filter.
-                        .requestMatchers(HttpMethod.POST, "/songs/**").hasRole("ARTIST")
-                        .requestMatchers(HttpMethod.PUT, "/songs/**").hasRole("ARTIST")
-                        .requestMatchers(HttpMethod.DELETE, "/songs/**").hasRole("ARTIST")
+                    // Rules for "liking" songs
+                    // Allow any authenticated user (LISTENER or ARTIST)
+                    .requestMatchers(HttpMethod.POST, "/songs/{id}/like").authenticated() 
+                    .requestMatchers(HttpMethod.DELETE, "/songs/{id}/like").authenticated() 
 
-                        // All other requests must be authenticated
-                        .anyRequest().authenticated()
+                    // Rules for "uploading/editing" songs
+                    // Must be an ARTIST
+                    .requestMatchers(HttpMethod.POST, "/songs/upload").hasRole("ARTIST")
+                    .requestMatchers(HttpMethod.POST, "/songs").hasRole("ARTIST") 
+                    .requestMatchers(HttpMethod.PUT, "/songs/**").hasRole("ARTIST")
+                    .requestMatchers(HttpMethod.DELETE, "/songs/**").hasRole("ARTIST")
+
+                    .anyRequest().authenticated()
                 );
 
         return http.build();

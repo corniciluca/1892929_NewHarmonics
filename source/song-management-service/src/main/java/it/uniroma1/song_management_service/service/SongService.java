@@ -99,23 +99,28 @@ public class SongService {
         song.setDurationSeconds(durationInSeconds); // You can calculate this later if needed
         
         Song savedSong = songRepository.save(song);
-        indexSongInElasticsearch(savedSong);
-        
+        //indexSongInElasticsearch(savedSong);
+
+        rabbitTemplate.convertAndSend(
+                RabbitMQConstants.INDEX_EXCHANGE, 
+                RabbitMQConstants.SONG_INDEX_ROUTING_KEY,
+                savedSong
+        );
+
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             Map<String, Object> eventData = Map.of(
                     "artistId", artistId,
                     "artistName", artist,
                     "songTitle", title,
-                    "songId", savedSong.getId(),
-                    "coverUrl", coverObjectName
+                    "songId", savedSong.getId()
             );
             
             String message = objectMapper.writeValueAsString(eventData);
             rabbitTemplate.convertAndSend(
                     RabbitMQConstants.MUSIC_EXCHANGE, 
                     RabbitMQConstants.SONG_UPLOADED_ROUTING_KEY,
-                    message
+                    eventData
             );
                 
                 log.info("📤 Sent rich event to RabbitMQ for song: {}", title);
@@ -271,7 +276,12 @@ public class SongService {
 
         // Save to DB and Elasticsearch
         Song savedSong = songRepository.save(existingSong);
-        indexSongInElasticsearch(savedSong);
+
+        rabbitTemplate.convertAndSend(
+                RabbitMQConstants.INDEX_EXCHANGE, 
+                RabbitMQConstants.SONG_INDEX_ROUTING_KEY,
+                savedSong
+        );
 
         return savedSong;
     }
