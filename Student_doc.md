@@ -57,32 +57,21 @@ This container does not connect to any external service.
     - components, used to display a specific key element of the page layout;
     - routes, used to contain the logic needed to display each page.
 
-- ENDPOINTS: <put this bullet point only in the case of backend and fill the following table>
-		
-	| HTTP METHOD | URL | Description | User Stories |
-	| ----------- | --- | ----------- | ------------ |
-    | ... | ... | ... | ... |
-
 - PAGES: <put this bullet point only in the case of frontend and fill the following table>
     
     | Name            | Description            | Related Microservice | User Stories |
     |-----------------|------------------------|----------------------|--------------|
-    | Home            | Home page              |                      |              |
-    | Register        | Sign up page           |                      |              |
-    | Login           | Log in page            |                      |              |
-    | UserProfile     | Profile page           |                      |              |
-    | EditProfile     | Profile editing form   |                      |              |
-    | Feed            | Feed page              |                      |              |
-    | Upload          | Song upload form       |                      |              |
-    | SongEdit        | Song editing form      |                      |              |
-    | SongsManagement | Song editing page      |                      |              |
-    | SearchResults   | Landing page of search |                      |              |
-    | Following       | Followed artists page  |                      |              |
-
-- DB STRUCTURE: <put this bullet point only in the case a DB is used in the microservice and specify the structure of the tables and columns>
-
-	**_<name of the table>_** :	| **_id_** | <other columns>
-
+    | Home            | Home page              |     song-service                 | 6            |
+    | Register        | Sign up page           |      user-service                | 1            |
+    | Login           | Log in page            |  user-service                    | 4            |
+    | UserProfile     | Profile page           |   user-service                   | 9, 13, 18, 21, 22 |
+    | EditProfile     | Profile editing form   |       user-service               | 2, 3         |
+    | Feed            | Feed page              | user-service, song-service       | 10           |
+    | Upload          | Song upload form       |       song-service               | 12           |
+    | SongEdit        | Song editing form      |     song-service                 | 15           |
+    | SongsManagement | User's songs page      |       song-service               | 13           |
+    | SearchResults   | Landing page of search |     elasticsearch                | 10           |
+    | Following       | Followed artists page  |       user-service               | 9            |
 
 ## CONTAINER_NAME: api-gateway
 
@@ -435,5 +424,6 @@ Queues and exchanges for events:
 
 ### EXTERNAL SERVICES CONNECTIONS
 Connected to by user-service, song-service, and notification-service.
+
 
 
