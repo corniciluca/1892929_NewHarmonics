@@ -11,7 +11,7 @@ RUN mvn clean package -DskipTests
 # ========================
 # Stage 2: Create the final, secure runtime image
 # ========================
-FROM openjdk:17-slim
+FROM eclipse-temurin:17-jre-focal
 
 # Define arguments for a non-root user and group to avoid hardcoding
 ARG USER_NAME=springuser
