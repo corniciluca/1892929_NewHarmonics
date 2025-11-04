@@ -26,14 +26,22 @@ export default function Navbar({ currentUser,isLoggedIn, isArtist, onLogout }) {
   return (
     <AppBar position="static" color="transparent" elevation={0}>
       <Toolbar sx={{justifyContent:"space-between"}}>
-        <Typography
-          variant="h4"
-          sx={{ fontWeight: 700, color: "black", textDecoration: 'none', cursor: 'pointer' }}
+        <Box
           component={Link}
           to="/"
+          sx={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}
         >
-          NewHarmonics
-        </Typography>
+          <Box
+            component="img"
+            // Assumes your logo is in the /public folder
+            src="/NH_logo_name.png" 
+            alt="NewHarmonics"
+            sx={{ 
+              height: 60, // Adjust the height as needed
+              width: 'auto' 
+            }}
+          />
+        </Box>
         
         <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <TextField
