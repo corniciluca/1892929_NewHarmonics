@@ -22,6 +22,8 @@ As an unregistered user, I want to create an account, so that I can start using 
 ### Lo-Fi Mockup
 **Description:** Registration form with fields for username, email, password, and role selection (radio buttons for ARTIST/LISTENER).
 
+<img width="1390" height="1057" alt="SCR-20251107-ltlt" src="https://github.com/user-attachments/assets/463e6af3-dea2-4bbc-8ecb-b5234fb63249" />
+
 ---
 
 ## USER STORY 2: Edit Profile
@@ -47,6 +49,9 @@ As a registered user, I want to edit my profile (name, email, password), so that
 ### Lo-Fi Mockup
 **Description:** A profile settings form with fields for "Name," "Email," and a separate "Change Password" section with "Old Password," "New Password," and "Confirm New Password."
 
+<img width="1243" height="949" alt="image" src="https://github.com/user-attachments/assets/77e711ac-2c42-4fed-ac5c-a5e4c1aad8f9" />
+
+
 ---
 
 ## USER STORY 3: Delete Account
@@ -68,6 +73,9 @@ As a registered user, I want to delete my account, so that I can permanently rem
 ### Lo-Fi Mockup
 **Description:** A confirmation modal that appears after clicking "Delete Account." It has a strong warning message and a password input field for confirmation.
 
+### Refer to Edit Profile mockup
+
+
 ---
 
 ## USER STORY 4: User Login
@@ -88,6 +96,9 @@ As a registered user who is logged out, I want to log in, so that I can access a
 ### Lo-Fi Mockup
 **Description:** A simple login form with "Email," "Password," and "Log In" button.
 
+<img width="1245" height="948" alt="image" src="https://github.com/user-attachments/assets/59b6150b-d6f2-4c04-926a-a7744dc602d1" />
+
+
 ---
 
 ## USER STORY 5: User Logout
@@ -107,6 +118,8 @@ As a registered logged-in user, I want to log out, so that I can leave the appli
 
 ### Lo-Fi Mockup
 **Description:** A dropdown menu from the user's profile icon, showing a "Log Out" link.
+
+### Refer to Edit Profile mockup
 
 ---
 
@@ -132,6 +145,9 @@ As a user, I want to view the Home Page, so that I can explore the newest and mo
 ### Lo-Fi Mockup
 **Description:** A dashboard-style page with horizontal scrolling carousels for "Newest Uploads" and "Most Popular."
 
+<img width="1244" height="947" alt="image" src="https://github.com/user-attachments/assets/e9e49e21-efb8-4d34-a729-cd001f1cbe66" />
+
+
 ---
 
 ## USER STORY 7: Follow Artist
@@ -152,6 +168,9 @@ As a registered user, I want to follow an artist, so that I can quickly access t
 ### Lo-Fi Mockup
 **Description:** An artist's profile page with a prominent "Follow" button near their name.
 
+<img width="1246" height="947" alt="image" src="https://github.com/user-attachments/assets/0bcb2c4c-a901-4d7d-a6d3-a05d8038c9b3" />
+
+
 ---
 
 ## USER STORY 8: Unfollow Artist
@@ -171,6 +190,8 @@ As a registered user, I want to unfollow an artist, so that I remove them from m
 
 ### Lo-Fi Mockup
 **Description:** The same button from User Story 7, but in its "Following" state, which, when clicked, triggers the unfollow action.
+
+### Refer to Follow Artist mockup
 
 ---
 
@@ -195,6 +216,9 @@ As a registered user, I want to open my Following Page, so that I can see the ar
 
 **Description:** A simple list view. Each row contains an artist's circular profile picture, their name, and an "Unfollow" button.
 
+<img width="1245" height="946" alt="image" src="https://github.com/user-attachments/assets/c40671aa-e014-4cfd-9039-8cd925de5962" />
+
+
 ---
 
 ## USER STORY 10: View Feed Page
@@ -213,6 +237,9 @@ As a registered user, I want to open my Feed Page, so that I can see the recent 
 
 ### Lo-Fi Mockup
 **Description:** A vertical, timeline-style feed (like Twitter or Facebook) where each post is a new song upload, with cover art, title, and artist.
+
+<img width="1246" height="948" alt="image" src="https://github.com/user-attachments/assets/c321a4a0-993f-4f64-82fb-a7fb974d7ce2" />
+
 
 ---
 
@@ -236,6 +263,9 @@ As a registered user, I want to get notified when someone I follow uploads a new
 
 ### Lo-Fi Mockup
 **Description:** A "bell" icon in the app's main header. A dropdown list appears when clicked, showing new activity.
+
+<img width="1242" height="946" alt="image" src="https://github.com/user-attachments/assets/0e8f96c2-cac5-4cdb-859a-3888bd67657f" />
+
 
 ---
 
@@ -264,6 +294,9 @@ As an artist, I want to upload a song or podcast, so that others can listen to m
 ### Lo-Fi Mockup
 **Description:** A multi-step form. Step 1: "Drag and drop your audio file." Step 2: "Fill in the details (title, genre, cover art)."
 
+<img width="1244" height="946" alt="image" src="https://github.com/user-attachments/assets/21d28fd8-ff4f-4c8b-bc18-85804803db11" />
+
+
 ---
 
 ## USER STORY 13: View My Uploaded Songs
@@ -286,6 +319,9 @@ As an artist, I want to see the list of songs I have uploaded, so that I can man
 [Insert Balsamiq mockup image here]
 **Description:** A table or list view, where each row is a song, showing Title, Upload Date, Plays, Likes, and buttons for "Edit" and "Delete."
 
+<img width="1244" height="948" alt="image" src="https://github.com/user-attachments/assets/9b00d18b-3a94-4e5b-bf28-b8c0e9a1cef8" />
+
+
 ---
 
 ## USER STORY 14: Delete Uploaded Song
@@ -306,6 +342,8 @@ As an artist, I want to delete one of my uploaded songs, so that it is no longer
 
 ### Lo-Fi Mockup
 **Description:** A simple confirmation modal: "Are you sure you want to permanently delete 'Song Title'?" with "Cancel" and "Delete" buttons.
+
+### Refer to My Uploaded Songs mockup
 
 ---
 
@@ -330,6 +368,9 @@ As an artist, I want to update the details of a song (title, genre, album, cover
 ### Lo-Fi Mockup
 **Description:** The same form as the "Upload" page, but pre-filled with existing song data and with a "Save Changes" button.
 
+<img width="1244" height="949" alt="image" src="https://github.com/user-attachments/assets/738370d7-1ce4-490b-828c-09e2c79e0563" />
+
+
 ---
 
 ## USER STORY 16: Listen to a Song
@@ -353,6 +394,9 @@ As a user, I want to listen to a song available on the platform through the play
 ### Lo-Fi Mockup
 **Description:** A "sticky" footer bar that contains a play/pause button, song title, and a progress bar.
 
+<img width="1243" height="946" alt="image" src="https://github.com/user-attachments/assets/e1a3b2eb-f4b8-4892-bdfb-416f5b73756e" />
+
+
 ---
 
 ## USER STORY 17: Add Song to Favorites (Like)
@@ -373,6 +417,9 @@ As a registered user, I want to add a song to my favorites, so that I can easily
 
 ### Lo-Fi Mockup
 **Description:** A "heart" icon next to a song's title, which can be in an "empty" or "filled" state.
+
+<img width="1246" height="947" alt="image" src="https://github.com/user-attachments/assets/ce4b7b1d-6b64-46f6-b56f-1d8b5b82e2e2" />
+
 
 ---
 
@@ -395,6 +442,9 @@ As a registered user, I want to see the list of my liked songs, so that I can qu
 ### Lo-Fi Mockup
 **Description:** A playlist-style view, showing a numbered list of songs with title, artist, and a "heart" (like) button.
 
+<img width="1246" height="949" alt="image" src="https://github.com/user-attachments/assets/fb4de998-6b44-4799-a5da-3e656fff0d28" />
+
+
 ---
 
 ## USER STORY 19: Search
@@ -416,6 +466,8 @@ As a user, I want to search for songs by title, artist, or genre, so that I can 
 
 ### Lo-Fi Mockup
 **Description:** A search bar at the top of the site. A results page with tabbed sections for "Songs," "Artists," etc.
+
+### Refer to Homepage mockup
 
 ---
 
@@ -441,6 +493,9 @@ As a registered user, I want to access my Profile Page, so that I can see my det
 ### Lo-Fi Mockup
 **Description:** A profile page with a user avatar and name at the top, followed by tabbed content for "Likes," "Following," and "Uploads."
 
+<img width="1012" height="949" alt="image" src="https://github.com/user-attachments/assets/1721f29c-e464-4625-b44f-dea31b57528e" />
+
+
 ---
 
 ## USER STORY 21: View Artist's Profile Page
@@ -462,6 +517,8 @@ As a user, I want to visit an artist's Profile Page, so that I can see their upl
 
 ### Lo-Fi Mockup
 **Description:** A banner-style page with the artist's cover photo, profile picture, and name, with a "Follow" button. Below this is a grid or list of all their songs.
+
+### Refer to Follow Artist mockup
 
 ---
 
