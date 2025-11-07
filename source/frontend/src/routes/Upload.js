@@ -41,7 +41,7 @@ export default function Upload({ currentUser }) {
       });
       
       alert("Song uploaded!");
-      navigate("/mysongs");
+      navigate("/manage-songs");
     } catch (err) {
       alert("Upload error: " + err.message);
     }

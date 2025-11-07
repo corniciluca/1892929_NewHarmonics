@@ -14,10 +14,8 @@ import EditProfile from './routes/EditProfile';
 import Upload from './routes/Upload';
 import NotFound from './routes/NotFound';
 
-import MySongs from './routes/MySongs';
 import SongsManagement from './routes/SongsManagement';
 import Following from './routes/Following';
-import Dashboard from './routes/Dashboard';
 import Notification from './routes/Notification';
 import SearchResults from './routes/SearchResults';
 
@@ -122,19 +120,12 @@ function App() {
         />
         
         {/* 4. Add all your missing routes */}
-        <Route 
-          path="/dashboard" 
-          element={isLoggedIn ? <Dashboard currentUser={currentUser} /> : <Navigate to="/login" />} 
-        />
         <Route path="/search" element={<SearchResults currentUser={currentUser}/>} />
         <Route 
           path="/following" 
           element={isLoggedIn ? <Following currentUser={currentUser} /> : <Navigate to="/login" />} 
         />
-        <Route 
-          path="/mysongs" 
-          element={isLoggedIn && isArtist ? <MySongs currentUser={currentUser} /> : <Navigate to="/" />} 
-        />
+
         <Route 
           path="/manage-songs" 
           element={isLoggedIn && isArtist ? <SongsManagement currentUser={currentUser} /> : <Navigate to="/" />} 
