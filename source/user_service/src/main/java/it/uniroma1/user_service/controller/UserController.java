@@ -6,13 +6,12 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import it.uniroma1.user_service.assembler.UserModelAssembler;
-import it.uniroma1.user_service.exceptions.UserNotFoundException;
 import it.uniroma1.user_service.model.UserEntity;
 import it.uniroma1.user_service.service.UserService;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
@@ -63,12 +62,27 @@ public class UserController {
 
     // Updates user {id}
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UserEntity userDetails) {
-        UserEntity updatedUser = userService.updateUserEntity(id, userDetails);
-        
-        EntityModel<UserEntity> entityModel = assembler.toModel(updatedUser);
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody Map<String, String> updates) {
+        // Extract standard UserEntity fields
+        UserEntity userDetails = new UserEntity();
+        userDetails.setUsername(updates.get("username"));
+        userDetails.setEmail(updates.get("email"));
+        // Add role if you allow updating it here, e.g.:
+        // if (updates.get("role") != null) userDetails.setRole(Role.valueOf(updates.get("role")));
 
-        return ResponseEntity.ok(entityModel);
+        // Extract password fields
+        String currentPassword = updates.get("currentPassword");
+        String newPassword = updates.get("newPassword");
+
+        try {
+            // Call new service method
+            UserEntity updatedUser = userService.updateUserEntity(id, userDetails, currentPassword, newPassword);
+            EntityModel<UserEntity> entityModel = assembler.toModel(updatedUser);
+            return ResponseEntity.ok(entityModel);
+        } catch (IllegalArgumentException e) {
+            // Catch password validation errors and return 400 Bad Request
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     // Deletes user {id} (and all their songs, alongside removing them from the following list of all other users)

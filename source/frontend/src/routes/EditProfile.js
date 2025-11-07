@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   Container, Typography, Box, Button, Avatar, Stack, Paper, 
-  TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Alert
+  TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Alert, Divider, Chip
 } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useNavigate } from 'react-router-dom';
@@ -12,6 +12,9 @@ export default function EditProfile({ user, onUserUpdate }) {
   const navigate = useNavigate();
   const [username, setUsername] = useState(user.username);
   const [email, setEmail] = useState(user.email);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -19,11 +22,37 @@ export default function EditProfile({ user, onUserUpdate }) {
   const handleUpdate = async () => {
     setError('');
     setSuccess('');
+
+    // Validation for password change
+    if (newPassword || currentPassword) {
+        if (newPassword !== confirmPassword) {
+            setError("New passwords do not match.");
+            return;
+        }
+        if (!currentPassword) {
+             setError("Current password is required to set a new one.");
+             return;
+        }
+    }
+
     try {
-      const updatedUser = await updateUser(user.id, { username, email });
-      onUserUpdate(updatedUser); // Aggiorna lo stato globale dell'app
+      // Construct payload with optional password fields
+      const payload = { 
+          username, 
+          email,
+          ...(newPassword && { currentPassword, newPassword }) 
+      };
+
+      const updatedUser = await updateUser(user.id, payload);
+      onUserUpdate(updatedUser); 
       setSuccess('Profile updated successfully');
+      
+      // Clear password fields on success
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
     } catch (err) {
+      // Display error message from backend (e.g., "Current password does not match")
       setError(err.message || 'Error during update!');
     }
   };
@@ -66,6 +95,31 @@ export default function EditProfile({ user, onUserUpdate }) {
              value={email}
              onChange={(e) => setEmail(e.target.value)}
              fullWidth
+           />
+           <Divider sx={{ my: 2 }}><Chip label="Change Password" /></Divider>
+           
+           <TextField 
+             label="Current Password"
+             type="password"
+             value={currentPassword}
+             onChange={(e) => setCurrentPassword(e.target.value)}
+             fullWidth
+           />
+           <TextField 
+             label="New Password"
+             type="password"
+             value={newPassword}
+             onChange={(e) => setNewPassword(e.target.value)}
+             fullWidth
+           />
+           <TextField 
+             label="Confirm New Password"
+             type="password"
+             value={confirmPassword}
+             onChange={(e) => setConfirmPassword(e.target.value)}
+             fullWidth
+             error={newPassword !== confirmPassword && confirmPassword !== ''}
+             helperText={newPassword !== confirmPassword && confirmPassword !== '' ? "Passwords do not match" : ""}
            />
            <Button variant="contained" onClick={handleUpdate}>Save changes</Button>
         </Stack>

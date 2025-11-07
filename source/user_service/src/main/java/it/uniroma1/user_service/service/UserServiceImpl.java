@@ -6,23 +6,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Map;
 
 import it.uniroma1.user_service.model.UserEntity;
 import it.uniroma1.user_service.repository.UserRepository;
 import it.uniroma1.user_service.exceptions.UserNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 public class UserServiceImpl implements UserService {
-
     private final UserRepository userRepository;
     private final RabbitTemplate rabbitTemplate;
+    private final PasswordEncoder passwordEncoder;
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
-    public UserServiceImpl(UserRepository userRepository, RabbitTemplate rabbitTemplate) {
+    public UserServiceImpl(UserRepository userRepository, RabbitTemplate rabbitTemplate, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.rabbitTemplate = rabbitTemplate;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -42,16 +43,32 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserEntity updateUserEntity(Long id, UserEntity userDetails) {
+    public UserEntity updateUserEntity(Long id, UserEntity userDetails, String currentPassword, String newPassword) {
         UserEntity user = findUserById(id);
-        if (userDetails.getUsername() != null)
+
+        // Update standard fields if provided
+        if (userDetails.getUsername() != null && !userDetails.getUsername().isBlank())
             user.setUsername(userDetails.getUsername());
-        if (userDetails.getEmail() != null)
+        if (userDetails.getEmail() != null && !userDetails.getEmail().isBlank())
             user.setEmail(userDetails.getEmail());
-        if (userDetails.getPassword() != null)
-            user.setPassword(userDetails.getPassword());
+        // Role usually shouldn't be updatable by the user themselves, but keeping your logic:
         if (userDetails.getRole() != null)
             user.setRole(userDetails.getRole());
+
+        // Handle Password Change securely
+        if (newPassword != null && !newPassword.isBlank()) {
+            // 1. Check if current password is provided
+            if (currentPassword == null || currentPassword.isBlank()) {
+                throw new IllegalArgumentException("Current password is required to set a new password.");
+            }
+            // 2. Verify current password matches DB hash
+            if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+                throw new IllegalArgumentException("Current password does not match.");
+            }
+            // 3. Hash and set new password
+            user.setPassword(passwordEncoder.encode(newPassword));
+        }
+
         return userRepository.save(user);
     }
 

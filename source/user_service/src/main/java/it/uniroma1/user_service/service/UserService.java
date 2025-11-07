@@ -12,7 +12,7 @@ public interface UserService {
     boolean existsByUsername(String username);
     UserEntity findUserByUsername(String username);
     UserEntity createUserEntity(UserEntity user);
-    UserEntity updateUserEntity(Long id, UserEntity userDetails);
+    UserEntity updateUserEntity(Long id, UserEntity userDetails, String currentPassword, String newPassword);
     void deleteUserEntity(Long id);
     UserEntity save(UserEntity user);
 }
