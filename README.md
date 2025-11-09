@@ -1,24 +1,20 @@
-# NewHarmonics
-NewHarmonics is a microservices-based music sharing platform
+# New Harmonics
+NewHarmonics is a microservices-based music sharing platform.
 
-Work in progress:
-- [x] User management microservice
-- [x] Song management microservice
-- [x] Notification/subscriptions microservice
-- [x] Api Gateway
-- [x] Front-end
-- [x] Improved search system
-- [x] Connect frontend to backend
-- [x] Upload songs to external service
-- [ ] Further improvements and changes
+<img width="710" height="554" alt="NH_combined" src="https://github.com/user-attachments/assets/484eec31-ee64-4b7c-b59b-0ceea349255b" />
 
-TODO:
-- [x] Follow from frontend - Alessandro
-- [x] Notifications
-- [x] Add album cover and clickable artist to SongPlayer
-- [x] Following section in main page - Alessandro
-- [x] Confirmation on song edit/delete - Onorio
-- [x] Song details - Onorio
-- [x] Pictures - Onorio
-- [x] Likes - Alessandro
-- [x] Fix song progress bar
+# Requirements
+- Docker
+
+# Instructions
+To start the containers move to the `source` folder and run the command
+```
+docker-compose up -d --build
+```
+
+To use the app go to http://localhost:3000
+
+To stop the containers use
+```
+docker-compose down
+```
