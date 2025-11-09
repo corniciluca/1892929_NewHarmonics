@@ -532,7 +532,19 @@ As a user, I want to visit an artist's Profile Page, so that I can see their upl
 
 # System architecture
 
+The system architetture is composed of an orchestration of docker's containers, each of them contain an indipendent microservice with its own database, following the Database per Service pattern.
 
+![sysArch](https://github.com/user-attachments/assets/a0692e19-f248-4c54-9f8b-0a39d302b892)
+
+**Frontend**: offer a single-page react served via Node.js. this service will interacts exclusively with the API Gateway, having no direct contant with other services.
+
+**API Gateway** : implemented via Spring Cloud Gateway, it handles: JWT validation,CORS and request routing toward proper micro-service.
+
+**Song Service**: Song CRUD, playback, feed generation. It interact with MinIO for file storage, with MongoDB to save song's metadata and with elasticsearch for search functionalities. Song Service publishes events to RabbitMQ on two topics: music.exchange (for notifications) and index.exchange (for Elasticseach indexing songs)
+
+**User Service**: Authentication, user management, follow/unfollow. User Service publishes events to RabbitMQ on user.exchange topic whenever a user delete his account, consequently the song service, that is listening on the same queue, delete deletes all songs by that artist from MongoDB and MinIO.
+
+**Notification Service**: Push notifications for followers
 
 # Sprint analytics
 # Burndown data
