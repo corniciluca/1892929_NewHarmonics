@@ -534,7 +534,7 @@ As a user, I want to visit an artist's Profile Page, so that I can see their upl
 
 The system architetture is composed of an orchestration of docker's containers, each of them contain an indipendent microservice with its own database, following the Database per Service pattern.
 
-![sysArch](https://github.com/user-attachments/assets/a0692e19-f248-4c54-9f8b-0a39d302b892)
+<img width="1646" height="826" alt="arch" src="https://github.com/user-attachments/assets/0582d704-7ccc-4e2d-8ef9-b9c20b3a1dfd" />
 
 **Frontend**: offer a single-page react served via Node.js. this service will interacts exclusively with the API Gateway, having no direct contant with other services.
 
@@ -547,6 +547,15 @@ The system architetture is composed of an orchestration of docker's containers, 
 **Notification Service**: Push notifications for followers
 
 # Sprint analytics
-# Burndown data
-# Burndown chart
+The workload has been divided in 5 sprints:
+1. **Project definition** - initial brainstorming and planning
+2. **Project setup** - definition of user stories and wireframes and effort estimation
+3. **Core functionalities** - implementation of backend and frontend for song management and user service
+4. **Advanced functionalities** - implementation of following, liking and feed, alongside the improved search and upload system and the notification system
+5. **Documentation** - final revision and finalization of the documentation
 
+# Burndown data
+<img width="1263" height="805" alt="bdata" src="https://github.com/user-attachments/assets/4ce599a5-0518-449b-a2f3-2f7f86503500" />
+
+# Burndown chart
+<img width="2319" height="633" alt="bchart" src="https://github.com/user-attachments/assets/5f952ced-93ba-4d68-b0ad-b55e6d4f52c4" />
