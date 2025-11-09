@@ -555,7 +555,8 @@ The workload has been divided in 5 sprints:
 5. **Documentation** - final revision and finalization of the documentation
 
 # Burndown data
-<img width="1263" height="805" alt="bdata" src="https://github.com/user-attachments/assets/4ce599a5-0518-449b-a2f3-2f7f86503500" />
+
+![Immagine 2025-11-09 232906](https://github.com/user-attachments/assets/4e86805a-9b61-4c18-88d4-8b3f6325ce29)
 
 # Burndown chart
 <img width="2319" height="633" alt="bchart" src="https://github.com/user-attachments/assets/5f952ced-93ba-4d68-b0ad-b55e6d4f52c4" />
