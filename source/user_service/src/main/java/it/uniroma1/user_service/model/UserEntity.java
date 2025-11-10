@@ -3,24 +3,27 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import it.uniroma1.user_service.enums.Role;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "users")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class UserEntity {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
     
     @NotBlank(message = "Username is required")
@@ -35,6 +38,7 @@ public class UserEntity {
 
     private Role role;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotBlank(message = "Password is required")
     private String password;
     
@@ -61,5 +65,7 @@ public class UserEntity {
             joinColumns = @JoinColumn(name = "follower_id"),  // this user
             inverseJoinColumns = @JoinColumn(name = "artist_id") // followed artist
     )
+    @ToString.Exclude
+    @JsonIgnoreProperties("followedArtists")
     private Set<UserEntity> followedArtists = new HashSet<>();
 }
