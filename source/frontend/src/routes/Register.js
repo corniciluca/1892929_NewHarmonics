@@ -22,15 +22,15 @@ export default function Register() {
     e.preventDefault();
     setError('');
     if (password.length < 6) {
-        setError("La password deve essere di almeno 6 caratteri.");
+        setError("Password needs to be at least 6 characters long.");
         return;
     }
     try {
       await register({ username, email, password, role });
-      alert('Registrazione avvenuta con successo!');
+      alert('Succesfully signed up!');
       navigate('/login');
     } catch (err) {
-      setError(err.message || 'Errore durante la registrazione.');
+      setError(err.message || 'Error during sign up.');
     }
   };
 
@@ -93,7 +93,7 @@ export default function Register() {
             </Button>
           </Box>
           <Typography variant="body2">
-            Hai già un account?{' '}
+            Already have an account?{' '}
             <Link component="button" onClick={()=>navigate('/login')}>
               Login
             </Link>

@@ -23,7 +23,7 @@ export default function Login({ onLogin }) {
       onLogin();
       navigate('/');
     } catch (err) {
-      setError(err.message || 'Login fallito. Controlla le credenziali.');
+      setError(err.message || 'Login failed. Check your credentials.');
     }
   };
 
@@ -68,9 +68,9 @@ export default function Login({ onLogin }) {
           </Box>
           <Box sx={{ textAlign:'center', mt:1 }}>
             <Typography variant="body2">
-              Non sei ancora registrato?{' '}
+              Not registered yet?{' '}
               <Link component="button" onClick={() => navigate('/register')}>
-                Registrati
+                Sign Up
               </Link>
             </Typography>
           </Box>

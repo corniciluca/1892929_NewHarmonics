@@ -53,7 +53,7 @@ export default function Following({ currentUser }) {
 
       {followedArtists.length === 0 ? (
         <Typography variant="body1" sx={{ mt: 2, fontStyle: 'italic' }}>
-          Non stai seguendo nessun artista al momento.
+          You aren not following any artist currently.
         </Typography>
       ) : (
         <Grid container spacing={4}>
