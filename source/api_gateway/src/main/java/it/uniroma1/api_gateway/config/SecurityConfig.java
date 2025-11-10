@@ -72,6 +72,9 @@ public class SecurityConfig {
                         // Add the new file-update endpoint to the ARTIST rules
                         .pathMatchers(HttpMethod.POST, "/songs/upload").hasRole("ARTIST")
                         .pathMatchers(HttpMethod.POST, "/songs/{id}/update").hasRole("ARTIST") // <-- ADD THIS
+                        
+                        .pathMatchers(HttpMethod.OPTIONS, "/songs/{id}/like").permitAll()// <-- ADD THIS
+                        .pathMatchers(HttpMethod.DELETE, "/songs/{id}/like").permitAll() // <-- ADD THIS
 
                         .pathMatchers(HttpMethod.PUT, "/songs/**").hasRole("ARTIST")
                         .pathMatchers(HttpMethod.DELETE, "/songs/**").hasRole("ARTIST")
