@@ -169,6 +169,25 @@ public class SongService {
         searchRepository.deleteById(id);
     }
 
+    public void deleteAllSongsByArtist(Long artistId) {
+        log.info("Starting deletion of all songs for artist ID: {}", artistId);
+
+        List<Song> artistSongs = songRepository.findByArtistId(artistId);
+
+        for (Song song : artistSongs) {
+            try {
+                // Reuse the existing delete logic to ensure MinIO/ES cleanup
+                deleteSong(song.getId());
+                log.info("Deleted song {} (ID: {}) due to artist deletion", song.getTitle(), song.getId());
+            } catch (Exception e) {
+                log.error("Failed to auto-delete song {} for artist {}", song.getId(), artistId, e);
+                // Continue with next song even if one fails
+            }
+        }
+
+        log.info("Finished deletion of {} songs for artist ID: {}", artistSongs.size(), artistId);
+    }
+
     public List<Song> getSongsByArtistId(Long artistId) {
         return songRepository.findByArtistId(artistId);
     }
