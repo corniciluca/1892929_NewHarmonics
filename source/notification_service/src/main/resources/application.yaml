@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: notification-service
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: guest
+    password: guest
+
+server:
+  port: 8083
+
+logging:
+  level:
+    root: INFO
+    it.uniroma1.notification_service: DEBUG
+    org.springframework.amqp: DEBUG

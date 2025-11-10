@@ -1,24 +1,28 @@
 # SYSTEM DESCRIPTION:
 
-Music sharing web app where users can register either as artists or listeners. Artists can upload songs with basic metadata (title, genre), while all users can browse and play music. The system includes a basic dashboard that displays popular songs and tracks from artists the current user is subscribed to.
+New Harmonics is a music sharing web app where users can register either as artists or listeners. Artists can upload songs with basic metadata (title, album, genre), while all users can browse and play music. The system includes a basic dashboard that displays popular songs and tracks from artists the current user is following. Users can also download or like songs in order to save them and get notifications regarding the latest uploads of their followings.
 
 # USER STORIES:
 
-1. As an unregistered user, I want to create an account, so that I can start using the application.  
-2. As a registered user who is logged out, I want to log in, so that I can access all the features.  
-3. As a logged-in user, I want to log out, so that I can leave the application securely.  
-4. As a user, I want to view the Home Page, so that I can explore the newest and most popular uploaded songs.  
-5. As a listener, I want to follow artists, so that I can quickly reach their profiles and music.  
-6. As a user, I want to open a Following Page, so that I can see the recent uploads from the artists I follow.  
-7. As a user, I want to get notified when someone I follow shares a new song, so that I can listen right away.  
-8. As an artist, I want to upload a song or podcast, so that others can listen to my content.  
-9. As an artist, I want to see the list of songs I have uploaded, so that I can manage my content.  
-10. As an artist, I want to delete one of my uploaded songs, so that it is no longer available to others.  
-11. As an artist, I want to update the details of a song (title, genre, featured artists), so that the information stays accurate.  
-12. As a user, I want to listen to songs available on the platform, so that I can enjoy music from different artists.  
-13. As a user, I want to add songs to my favorites, so that I can find them later.  
-14. As a user, I want to search for songs by title, artist, or genre, so that I can find the music I want.  
-15. As a user, I want to access my Profile Page, so that I can see my details, favorite songs, and uploaded songs.  
-16. As a user, I want to visit another user’s Profile Page, so that I can see their music and the artists they follow.  
-17. As a user, I want to edit my profile (name, picture, favorite genres), so that it reflects my preferences.  
-18. As a user, I want to delete my account, so that I can permanently remove my profile and songs.  
+1. As an unregistered user, I want to create an account, so that I can start using the application.
+2. As a registered user, I want to edit my profile (name, email, password), so that it reflects my preferences. 
+3. As a registered user, I want to delete my account, so that I can permanently remove my profile and songs.
+4. As a registered user who is logged out, I want to log in, so that I can access all the features.  
+5. As a registered logged-in user, I want to log out, so that I can leave the application securely.
+6. As a user, I want to view the Home Page, so that I can explore the newest and most popular uploaded songs.  
+7. As a registered user, I want to follow an artist, so that I can quickly accessa their profiles and music.
+8. As a registered user, I want to unfollow an artist, so that I remove them from my following list
+9. As a registered user, I want to open my Following Page, so that I can see the artists I follow.
+10. As a registered user, I want to open my Feed Page, so that I can see the recent uploads from the artists I follow.
+11. As a registered user, I want to get notified when someone I follow uploads a new song, so that I can listen right away.  
+12. As an artist, I want to upload a song or podcast, so that others can listen to my content.  
+13. As an artist, I want to see the list of songs I have uploaded, so that I can manage my content.  
+14. As an artist, I want to delete one of my uploaded songs, so that it is no longer available to others.  
+15. As an artist, I want to update the details of a song (title, genre, album, cover, audio file), so that the information stays accurate.  
+16. As a user, I want to listen to a song available on the platform through the player, so that I can enjoy music from different artists.  
+17. As a registered user, I want to add a song to my favorites, so that I can easily find it later.
+18. As a registered user, I want to see the list of my liked songs, so that I can quickly access my favorite music.
+19. As a user, I want to download a song, so that I can keep it stored in my system.
+20. As a user, I want to search for songs by title, artist, or genre, so that I can find the music I want.  
+21. As a registered user, I want to access my Profile Page, so that I can see my details, favorite songs and followed artists.  
+22. As a user, I want to visit an artist's Profile Page, so that I can see their uploaded music.   

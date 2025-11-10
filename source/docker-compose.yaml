@@ -1,0 +1,150 @@
+# Define a common template for services to avoid repetition
+x-base-service: &base-service
+  restart: unless-stopped
+  networks:
+    - microservices-network
+
+services:
+
+  minio:
+    <<: *base-service
+    image: minio/minio
+    container_name: minio
+    ports:
+      - "9001:9000"
+      - "9090:9090"
+    volumes:
+      - minio_data:/data
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    command: server /data --console-address ":9090"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  frontend:
+    <<: *base-service
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_GATEWAY_URL=http://localhost:9000
+
+  notification-service:
+    <<: *base-service
+    build: ./notification_service
+    container_name: notification-service
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  api-gateway:
+    <<: *base-service
+    build: ./api_gateway
+    container_name: api-gateway
+    ports:
+      - "9000:9000"
+    depends_on:
+      - user-service
+      - song-service
+      - notification-service
+      - frontend
+      - mongo
+
+  user-service:
+    <<: *base-service
+    build: ./user_service
+    container_name: user-service
+    ports:
+      - "8080:8080"
+    volumes:
+      - userdb_data:/data/userdb
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  song-service:
+    <<: *base-service
+    build: ./song-management-service
+    container_name: song-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/music
+      - SPRING_PROFILES_ACTIVE=docker
+      - MINIO_ENDPOINT=http://minio:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - MINIO_BUCKET=newharmonics
+    depends_on:
+      mongo:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_started
+      minio:
+        condition: service_started
+
+  rabbitmq:
+    <<: *base-service
+    image: rabbitmq:3.11-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"   # AMQP protocol
+      - "15672:15672" # Management UI
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  mongo:
+    <<: *base-service
+    image: mongo:6
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  elasticsearch:
+    <<: *base-service
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: elasticsearch
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200 >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+networks:
+  microservices-network:
+
+volumes:
+  mongo_data:
+  userdb_data:
+  elasticsearch_data:
+  minio_data:
