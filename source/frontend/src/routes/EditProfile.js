@@ -6,9 +6,8 @@ import {
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useNavigate } from 'react-router-dom';
 import { updateUser, deleteUser } from '../api/userApi';
-import { logout } from '../api/api';
 
-export default function EditProfile({ user, onUserUpdate }) {
+export default function EditProfile({ user, onUserUpdate, onLogout }) {
   const navigate = useNavigate();
   const [username, setUsername] = useState(user.username);
   const [email, setEmail] = useState(user.email);
@@ -57,8 +56,8 @@ export default function EditProfile({ user, onUserUpdate }) {
     try {
         await deleteUser(user.id);
         alert('Account deleted successfully.');
-        logout();
-        navigate('/login');
+        onLogout();
+        navigate('/');
     } catch (err) {
         setError(err.message || 'Unable to delete account!');
     }

@@ -103,7 +103,7 @@ function App() {
         <Route path="/user/:id" element={isLoggedIn ? <UserProfile currentUser={currentUser}/> : <Navigate to="/login" />} />
         <Route 
           path="/edit-profile" 
-          element={isLoggedIn ? <EditProfile user={currentUser} onUserUpdate={handleUserUpdate} /> : <Navigate to="/login" />} 
+          element={isLoggedIn ? <EditProfile user={currentUser} onUserUpdate={handleUserUpdate} onLogout={handleLogout} /> : <Navigate to="/login" />}
         />
         <Route 
           path="/upload" 
