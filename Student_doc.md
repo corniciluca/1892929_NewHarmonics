@@ -125,7 +125,7 @@ Routes requests to:
 Manages song storage, metadata, upload/download, search functionality, and user feeds.
 
 ### USER STORIES:
-<list of user stories satisfied>
+6, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20
 
 ### PORTS: 
 8082:8082
@@ -239,7 +239,7 @@ Manages song storage, metadata, upload/download, search functionality, and user 
 Manages storage of user accounts.
 
 ### USER STORIES:
-<list of user stories satisfied>
+1, 2, 3, 4, 5, 7, 8, 9
 
 ### PORTS:
 8080:8080
@@ -424,6 +424,7 @@ Queues and exchanges for events:
 
 ### EXTERNAL SERVICES CONNECTIONS
 Connected to by user-service, song-service, and notification-service.
+
 
 
 
