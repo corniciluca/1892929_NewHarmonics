@@ -556,7 +556,7 @@ The workload has been divided in 5 sprints:
 
 # Burndown data
 
-![Immagine 2025-11-09 232906](https://github.com/user-attachments/assets/4e86805a-9b61-4c18-88d4-8b3f6325ce29)
+![SCRUM](https://github.com/user-attachments/assets/e30d9ad0-baa3-4df2-8f4e-d48fe2f224db)
 
 # Burndown chart
 <img width="2319" height="633" alt="bchart" src="https://github.com/user-attachments/assets/5f952ced-93ba-4d68-b0ad-b55e6d4f52c4" />
