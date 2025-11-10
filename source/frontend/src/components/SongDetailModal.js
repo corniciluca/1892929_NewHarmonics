@@ -83,7 +83,7 @@ export default function SongDetailModal() {
           <Box>
             <Typography variant="h6">{detailSong.title}</Typography>
             {artistId ? (
-              <Link component={RouterLink} to={`/artist/${artistId}`} underline="hover" color="inherit">
+              <Link component={RouterLink} to={`/user/${artistId}`} underline="hover" color="inherit">
                 <Typography variant="body2" color="gray">{detailSong.artist}</Typography>
               </Link>
             ) : (
