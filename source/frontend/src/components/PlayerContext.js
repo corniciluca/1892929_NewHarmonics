@@ -4,14 +4,13 @@ import SongDetailModal from './SongDetailModal';
 export const PlayerContext = createContext(null);
 
 export function PlayerProvider({ children, currentUser }) {
-  // Create audio element synchronously so play() can be called within event handlers
   const audioRef = useRef(typeof document !== 'undefined' ? new Audio() : null);
   const [currentSong, setCurrentSong] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(1);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [detailSong, setDetailSong] = useState(null); // null = closed, song = open
+  const [detailSong, setDetailSong] = useState(null); 
   const [isSeeking, setIsSeeking] = useState(false);
   const wasPlayingRef = useRef(false);
 
@@ -20,7 +19,6 @@ export function PlayerProvider({ children, currentUser }) {
     if (!audio) return;
 
     audio.preload = 'metadata';
-    // allow cross-origin media if your files are served from another host
     audio.crossOrigin = 'anonymous';
 
     const onTime = () => {
@@ -73,7 +71,7 @@ export function PlayerProvider({ children, currentUser }) {
 
     // If it's a new song OR a new version of the same song, reload the file
    const gateway = process.env.REACT_APP_API_GATEWAY_URL || 'http://localhost:9000';
-   // 4. Create the cache-busting URL using the timestamp
+   // Create the cache-busting URL using the timestamp
    const effectiveSrc = `${gateway}/songs/${song.id}/download?v=${newUploadTimestamp}`;
 
     setCurrentSong(song);
@@ -112,7 +110,7 @@ export function PlayerProvider({ children, currentUser }) {
                 audioRef.current.play();
                 setIsPlaying(true);
               }
-            }, 0); // 0ms is enough to push it to the next event loop
+            }, 0);
           }
         };
 

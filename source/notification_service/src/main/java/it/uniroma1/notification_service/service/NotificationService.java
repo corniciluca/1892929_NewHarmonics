@@ -31,7 +31,6 @@ public class NotificationService {
             String songTitle, 
             String songId) {
         
-        // Get all followers of this artist
         Set<Long> followerIds = getFollowersOfArtist(artistId);
         
         if (followerIds.isEmpty()) {
@@ -39,7 +38,6 @@ public class NotificationService {
             return;
         }
 
-        // Create notification for each follower
         for (Long followerId : followerIds) {
             NotificationEntity notification = new NotificationEntity();
             notification.setUserId(followerId);
@@ -48,7 +46,6 @@ public class NotificationService {
             notification.setReferenceId(songId);
             notification.setReferenceType(NotificationEntity.ReferenceType.SONG);
             
-            // Set metadata fields
             notification.setArtistId(artistId);
             notification.setArtistName(artistName);
             notification.setSongTitle(songTitle);
@@ -61,7 +58,6 @@ public class NotificationService {
 
     private Set<Long> getFollowersOfArtist(Long artistId) {
         try {
-            // Call user service to get followers
             List<?> followers = webClient.get()
                     .uri("/{artistId}/followers", artistId)
                     .retrieve()

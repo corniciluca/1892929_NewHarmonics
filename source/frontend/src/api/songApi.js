@@ -8,7 +8,6 @@ export async function getSongs() {
 }
 
 export async function getSongsByArtistId(artistId) {
-  // Use apiRequest to send the auth token automatically
   return apiRequest(`/songs/artist/${artistId}`);
 }
 
@@ -26,22 +25,12 @@ export async function uploadSong({ file, title, artist, artistId, album, genre, 
   formData.append("album", album);
   formData.append("genre", genre);
 
-  // Use apiRequest for the upload
   return apiRequest('/songs/upload', {
     method: "POST",
     body: formData,
   });
 }
 
-
-/* UNUSED
-    export async function updateSong(id, song) {
-      return apiRequest(`/songs/${id}`, {
-        method: "PUT",
-        body: JSON.stringify(song), // apiRequest will set 'Content-Type: json'
-      });
-    }
-*/
 
 /**
  * Updates a song's details, including optional audio and cover files.
@@ -52,24 +41,20 @@ export async function uploadSong({ file, title, artist, artistId, album, genre, 
 export async function updateSongDetails(id, songData) {
   const formData = new FormData();
 
-  // Add text data
   formData.append("title", songData.title);
   formData.append("album", songData.album);
   formData.append("genre", songData.genre);
 
-  // Conditionally add files (if they are not null)
   if (songData.audioFile) {
     formData.append("audioFile", songData.audioFile);
   }
   if (songData.coverFile) {
-    // Note: The backend controller expects "coverFile"
     formData.append("coverFile", songData.coverFile);
   }
 
-  // Use the new endpoint
   return apiRequest(`/songs/${id}/update`, {
     method: "POST",
-    body: formData, // apiRequest will handle FormData correctly (no JSON.stringify)
+    body: formData,
   });
 }
 

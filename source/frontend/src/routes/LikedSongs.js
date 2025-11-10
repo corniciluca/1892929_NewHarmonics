@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Container, Typography, Grid, CircularProgress, Alert } from '@mui/material';
-import SongCard from '../components/SongCard'; // Assicurati che il percorso sia corretto
-import { getLikedSongs } from '../api/songApi'; // Importa la nuova funzione
+import SongCard from '../components/SongCard';
+import { getLikedSongs } from '../api/songApi';
 
 export default function LikedSongs({ currentUser }) {
   const [songs, setSongs] = useState([]);
@@ -11,7 +11,6 @@ export default function LikedSongs({ currentUser }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // 1. Controlla se l'utente è loggato
     if (!currentUser) {
       setError("Devi effettuare il login per vedere i tuoi brani preferiti.");
       setLoading(false);
@@ -22,7 +21,6 @@ export default function LikedSongs({ currentUser }) {
       try {
         setError(null);
         setLoading(true);
-        // 2. Chiama l'endpoint protetto
         const likedSongs = await getLikedSongs();
         setSongs(likedSongs);
       } catch (err) {
@@ -34,9 +32,8 @@ export default function LikedSongs({ currentUser }) {
     };
 
     fetchLikedSongs();
-  }, [currentUser]); // Riesegui quando l'utente cambia (o al primo mount)
+  }, [currentUser]);
 
-  // Gestione degli stati di caricamento e errore
   if (loading) {
     return <Container sx={{ textAlign: 'center', mt: 10 }}><CircularProgress /></Container>;
   }
@@ -49,7 +46,6 @@ export default function LikedSongs({ currentUser }) {
     );
   }
 
-  // Visualizzazione dei brani
   return (
     <Container>
       <Typography variant="h4" sx={{ mt: 5, mb: 3, fontWeight: 700, color: '#7e57c2' }}>

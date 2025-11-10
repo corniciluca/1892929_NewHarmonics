@@ -26,7 +26,6 @@ export default function NotificationBell({ currentUser }) {
   const navigate = useNavigate();
   const open = Boolean(anchorEl);
 
-  // Fetch unread count periodically
   useEffect(() => {
     if (!currentUser) return;
 
@@ -40,7 +39,7 @@ export default function NotificationBell({ currentUser }) {
     };
 
     fetchUnreadCount();
-    const interval = setInterval(fetchUnreadCount, 30000); // Poll every 30s
+    const interval = setInterval(fetchUnreadCount, 30000);
     return () => clearInterval(interval);
   }, [currentUser]);
 
@@ -50,7 +49,6 @@ export default function NotificationBell({ currentUser }) {
     
     try {
       const data = await getNotifications();
-      // Show only the 5 most recent notifications
       setNotifications(data.slice(0, 5));
     } catch (err) {
       console.error('Failed to fetch notifications:', err);
@@ -64,7 +62,6 @@ export default function NotificationBell({ currentUser }) {
   };
 
     const handleNotificationClick = async (notification) => {
-    // Mark as read if unread
     if (!notification.read) {
       try {
         await markAsRead(notification.id);
@@ -77,7 +74,6 @@ export default function NotificationBell({ currentUser }) {
       }
     }
 
-    // Navigate to artist page if artistId is available
     handleClose();
     if (notification.artistId) {
       navigate(`/user/${notification.artistId}`);
@@ -105,7 +101,6 @@ export default function NotificationBell({ currentUser }) {
     return date.toLocaleDateString();
   };
 
-  // Don't show bell if not logged in
   if (!currentUser) return null;
 
   return (

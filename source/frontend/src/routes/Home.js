@@ -21,19 +21,15 @@ export default function Home({ currentUser }) {
   const isArtist = currentUser?.role === 'ARTIST';
 
   useEffect(() => {
-    // Public lists
     getRecentSongs().then(setRecent).catch(() => setRecent([]));
     getTrendingSongs().then(setTrending).catch(() => setTrending([]));
 
-    // Following: only for logged users
     if (isLoggedIn) {
-      // Use feed endpoint to get songs from followed artists
       getUserFeed(currentUser.id).then(setFollowing).catch(() => setFollowing([]));
     } else {
       setFollowing([]);
     }
 
-    // Your music: only for logged users that are artists
     if (isLoggedIn && isArtist) {
       getSongsByArtistId(currentUser.id).then(setYourMusic).catch(() => setYourMusic([]));
     } else {

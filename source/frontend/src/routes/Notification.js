@@ -10,7 +10,6 @@ import {
 } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
-// Example notifications, replace with your dynamic data!
 const notifications = [
   {
     id: 1,

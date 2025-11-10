@@ -40,7 +40,6 @@ export default function UserProfile({ currentUser }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Use loose equality (==) since one might be string, one number
     const isOwnProfile = currentUser && currentUser.id == id;
     setIsCurrentUser(isOwnProfile);
 
@@ -79,7 +78,6 @@ export default function UserProfile({ currentUser }) {
             setSongs([]);
         }
 
-        // Use loose equality (!=)
         if (currentUser && currentUser.id && currentUser.id != id && userData.role === 'ARTIST') {
           const followedList = await getFollowedArtists(currentUser.id);
           const alreadyFollowing = followedList.some(artist => String(artist.id) === id);
@@ -128,7 +126,6 @@ export default function UserProfile({ currentUser }) {
   if (error) return <Container sx={{ mt: 10 }}><Alert severity="error">{error}</Alert></Container>;
   if (!user) return <Container sx={{ mt: 10 }}><Typography>Utente non trovato.</Typography></Container>;
 
-  // This is correct as you set it
   const PREVIEW_COUNT = 5
   const isArtist = user.role === 'ARTIST';
 
@@ -191,7 +188,6 @@ export default function UserProfile({ currentUser }) {
               {likedSongs.length > 0 ? (
               <Grid container spacing={3}>
                 {likedSongs.slice(0, PREVIEW_COUNT).map((song) => (
-                  // --- FIX: Changed md={3} to md={2.4} for 5 columns ---
                   <Grid item xs={12} sm={6} md={2.4} key={song.id}>
                     <SongCard song={song} currentUser={currentUser} />
                   </Grid>
@@ -226,7 +222,6 @@ export default function UserProfile({ currentUser }) {
             <Grid container spacing={3}>
               {followedArtists.length > 0 ? (
                 followedArtists.slice(0, PREVIEW_COUNT).map((artist) => (
-                  // --- FIX: Changed md={3} to md={2.4} for 5 columns ---
                   <Grid item xs={12} sm={6} md={2.4} key={artist.id}>
                     <Paper
                       component={RouterLink}
@@ -284,7 +279,6 @@ export default function UserProfile({ currentUser }) {
             <Grid container spacing={3}>
               {songs.length > 0 ? (
                 songs.slice(0, PREVIEW_COUNT).map((song) => (
-                  // --- FIX: Changed md={3} to md={2.4} for 5 columns ---
                   <Grid item xs={12} sm={6} md={2.4} key={song.id}>
                     <SongCard song={song} currentUser={currentUser} />
                   </Grid>

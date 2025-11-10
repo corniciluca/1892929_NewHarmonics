@@ -8,7 +8,6 @@ import RssFeedIcon from '@mui/icons-material/RssFeed';
 import { Link, useNavigate } from 'react-router-dom';
 import NotificationBell from './NotificationBell';
 
-// 1. ACCETTA LE PROPS (isLoggedIn, isArtist, onLogout)
 export default function Navbar({ currentUser,isLoggedIn, isArtist, onLogout }) {
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
@@ -33,11 +32,10 @@ export default function Navbar({ currentUser,isLoggedIn, isArtist, onLogout }) {
         >
           <Box
             component="img"
-            // Assumes your logo is in the /public folder
             src="/NH_logo_name.png" 
             alt="NewHarmonics"
             sx={{ 
-              height: 60, // Adjust the height as needed
+              height: 60,
               width: 'auto' 
             }}
           />

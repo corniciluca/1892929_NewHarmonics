@@ -33,7 +33,6 @@ export default function SearchResults({ currentUser }) {
         if (!mounted) return;
         setSongs(results);
 
-        // derive unique artists from song results
         const map = new Map();
         results.forEach(s => {
           const id = s.artistId || s.artist_id || null;
@@ -44,12 +43,10 @@ export default function SearchResults({ currentUser }) {
           }
         });
 
-        // Fetch artist details from user service for entries that have an id
         const entries = Array.from(map.entries());
         const ids = entries.filter(([k, a]) => a.id).map(([k, a]) => a.id);
         if (ids.length > 0) {
           const details = await Promise.all(ids.map(id => getUserById(id).catch(() => null)));
-          // Merge details back into the map; details are in same order as ids
           let di = 0;
           for (let [key, art] of entries) {
             if (art.id) {

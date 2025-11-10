@@ -6,7 +6,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import SongCard from '../components/SongCard';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useNavigate } from 'react-router-dom';
-// 1. Import your new function
 import { getSongsByArtistId } from '../api/songApi';
 import { getFollowedArtists } from '../api/userApi';
 
@@ -20,16 +19,13 @@ export default function Profile({ user }) {
       if (user && user.id) {
           const fetchUserData = async () => {
               try {
-                  // Fetch user's songs (only if they are an ARTIST, otherwise it will be empty)
                   const userSongs = await getSongsByArtistId(user.id);
                   setSongs(userSongs);
 
-                  // 3. Fetch the list of followed artists
                   const followedArtists = await getFollowedArtists(user.id);
                   setFollowing(followedArtists);
               } catch (error) {
                   console.error("Error fetching user data:", error);
-                  // Optionally set an error state here
               } finally {
                   setLoading(false);
               }

@@ -21,7 +21,7 @@ export default function Login({ onLogin }) {
     try {
       await login(username, password);
       onLogin();
-      navigate('/'); // Reindirizza alla home dopo il login
+      navigate('/');
     } catch (err) {
       setError(err.message || 'Login fallito. Controlla le credenziali.');
     }

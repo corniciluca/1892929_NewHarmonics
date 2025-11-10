@@ -31,7 +31,6 @@ public class FeedService {
         Set<Long> followedArtistIds;
 
         try {
-            // Call the User Service through the API Gateway
             followedArtistIds = ((List<?>) webClient.get()
                     .uri(userServiceUrl + "/{id}/followed", userId)
                     .header("X-User-Id", userId.toString())
@@ -57,7 +56,6 @@ public class FeedService {
 
         log.info("User {} follows {} artists", userId, followedArtistIds.size());
 
-        // Fetch songs by these artists
         return songRepository.findByArtistIdIn(List.copyOf(followedArtistIds));
     }
 }

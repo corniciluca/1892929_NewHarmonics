@@ -45,7 +45,6 @@ public class SongService {
         this.rabbitTemplate = rabbitTemplate;
         this.minioService = minioService;
         
-        // Initialize MinIO bucket
         this.minioService.init();
     }
 
@@ -55,7 +54,6 @@ public class SongService {
 
     public Song uploadSong(MultipartFile audioFile, MultipartFile coverImageFile, String title, String artist, Long artistId, String album, String genre) throws IOException {
 
-        // --- 1. Calculate Duration ---
         File tempAudioFile = null;
         int durationInSeconds = 0;
         try {
@@ -68,18 +66,16 @@ public class SongService {
             // Read the audio file's metadata
             AudioFile f = AudioFileIO.read(tempAudioFile);
             AudioHeader header = f.getAudioHeader();
-            durationInSeconds = header.getTrackLength(); // This gives duration in seconds
+            durationInSeconds = header.getTrackLength();
 
         } catch (Exception e) {
             log.error("Could not read audio file duration", e);
-            // We'll proceed with 0, but log the error
         } finally {
             // Clean up the temporary file
             if (tempAudioFile != null && tempAudioFile.exists()) {
                 tempAudioFile.delete();
             }
         }
-        // --- End of Duration Calculation ---
 
         // Upload files to MinIO and get their object names
         String audioObjectName = minioService.uploadFile(audioFile);
@@ -92,14 +88,13 @@ public class SongService {
         song.setArtistId(artistId);
         song.setAlbum(album);
         song.setGenre(genre);
-        song.setFileUrl(audioObjectName); // Store MinIO object name
-        song.setCoverImageUrl(coverObjectName); // Store MinIO object name
+        song.setFileUrl(audioObjectName); 
+        song.setCoverImageUrl(coverObjectName);
         song.setPlayCount(0L);
         song.setUploadDate(LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
-        song.setDurationSeconds(durationInSeconds); // You can calculate this later if needed
+        song.setDurationSeconds(durationInSeconds);
         
         Song savedSong = songRepository.save(song);
-        //indexSongInElasticsearch(savedSong);
 
         rabbitTemplate.convertAndSend(
                 RabbitMQConstants.INDEX_EXCHANGE, 
@@ -182,28 +177,6 @@ public class SongService {
         return songRepository.findById(id).orElseThrow();
     }
 
-//      UNUSED
-//    public Song updateSong(String id, Song updatedSong) {
-//        Song existingSong = songRepository.findById(id).orElseThrow();
-//
-//        if (updatedSong.getTitle() != null && !updatedSong.getTitle().isBlank()) {
-//            existingSong.setTitle(updatedSong.getTitle());
-//        }
-//        if (updatedSong.getAlbum() != null && !updatedSong.getAlbum().isBlank()) {
-//            existingSong.setAlbum(updatedSong.getAlbum());
-//        }
-//        if (updatedSong.getGenre() != null && !updatedSong.getGenre().isBlank()) {
-//            existingSong.setGenre(updatedSong.getGenre());
-//        }
-//
-//        indexSongInElasticsearch(existingSong);
-//        return songRepository.save(existingSong);
-//    }
-
-    /**
-     * Updates a song's details, and optionally replaces its audio or cover image.
-     * This method handles deleting old files from MinIO if new ones are provided.
-     */
     public Song updateSongDetails(String id, String title, String album, String genre, MultipartFile audioFile, MultipartFile coverImageFile) throws Exception {
 
         Song existingSong = songRepository.findById(id)
@@ -232,7 +205,6 @@ public class SongService {
             String newAudioObjectName = minioService.uploadFile(audioFile);
             existingSong.setFileUrl(newAudioObjectName);
 
-            // --- Recalculate Duration ---
             File tempAudioFile = null;
             try {
                 tempAudioFile = File.createTempFile("update-", "-" + audioFile.getOriginalFilename());
@@ -286,7 +258,6 @@ public class SongService {
         return savedSong;
     }
 
-    // Helper method to index song in Elasticsearch
     private void indexSongInElasticsearch(Song song) {
         SongDocument doc = new SongDocument();
         doc.setId(song.getId());

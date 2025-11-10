@@ -14,7 +14,6 @@ public class RegisterRequest {
     @NotBlank
     private String role; // "ARTIST" or "LISTENER"
     
-    // Constructors
     public RegisterRequest() {}
 
     public RegisterRequest(String username, String password, String email, String role) {
@@ -24,7 +23,6 @@ public class RegisterRequest {
         this.role = role;
     }
 
-    // Getters and Setters
     public String getUsername() {
         return username;
     }

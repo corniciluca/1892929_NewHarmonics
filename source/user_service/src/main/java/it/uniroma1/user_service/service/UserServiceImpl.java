@@ -46,26 +46,20 @@ public class UserServiceImpl implements UserService {
     public UserEntity updateUserEntity(Long id, UserEntity userDetails, String currentPassword, String newPassword) {
         UserEntity user = findUserById(id);
 
-        // Update standard fields if provided
         if (userDetails.getUsername() != null && !userDetails.getUsername().isBlank())
             user.setUsername(userDetails.getUsername());
         if (userDetails.getEmail() != null && !userDetails.getEmail().isBlank())
             user.setEmail(userDetails.getEmail());
-        // Role usually shouldn't be updatable by the user themselves, but keeping your logic:
         if (userDetails.getRole() != null)
             user.setRole(userDetails.getRole());
 
-        // Handle Password Change securely
         if (newPassword != null && !newPassword.isBlank()) {
-            // 1. Check if current password is provided
             if (currentPassword == null || currentPassword.isBlank()) {
                 throw new IllegalArgumentException("Current password is required to set a new password.");
             }
-            // 2. Verify current password matches DB hash
             if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
                 throw new IllegalArgumentException("Current password does not match.");
             }
-            // 3. Hash and set new password
             user.setPassword(passwordEncoder.encode(newPassword));
         }
 
@@ -78,21 +72,17 @@ public class UserServiceImpl implements UserService {
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
 
-        // 1️⃣ Remove this user from others' followedArtists
         List<UserEntity> allUsers = userRepository.findAll();
         for (UserEntity u : allUsers) {
             if (u.getFollowedArtists().remove(user)) {
-                userRepository.save(u); // persist removal
+                userRepository.save(u);
             }
         }
 
-        // 2️⃣ Clear user's own followedArtists
         user.getFollowedArtists().clear();
 
-        // 3️⃣ Delete the user
         userRepository.delete(user);
 
-        // 4️⃣ Send RabbitMQ notification
         try {
             rabbitTemplate.convertAndSend(
                     RabbitMQConstants.USER_EXCHANGE,
@@ -100,7 +90,6 @@ public class UserServiceImpl implements UserService {
                     user.getId()
             );
         } catch (Exception e) {
-            // log and ignore; deletion already done
             log.error("Failed to send user-deleted event for user {}", id, e);
         }
     }

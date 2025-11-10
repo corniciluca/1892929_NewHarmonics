@@ -44,7 +44,6 @@ export const deleteUser = (userId) => {
  * @returns {Promise<Array<any>>} - Array di oggetti utente (artisti).
  */
 export const getFollowedArtists = (userId) => {
-    // This is correct as it fetches data about *another* user's following list
     return apiRequest(`/users/${userId}/followed`);
 };
 
@@ -57,7 +56,6 @@ export const getFollowedArtists = (userId) => {
  * @returns {Promise<void>}
  */
 export const followArtist = (artistId) => {
-    // CHIAMATA CORRETTA: POST /users/follow/{artistId}
     return apiRequest(`/users/follow/${artistId}`, {
         method: 'POST',
     });
@@ -71,7 +69,6 @@ export const followArtist = (artistId) => {
  * @returns {Promise<void>}
  */
 export const unfollowArtist = (artistId) => {
-    // CHIAMATA CORRETTA: DELETE /users/unfollow/{artistId}
     return apiRequest(`/users/unfollow/${artistId}`, {
         method: 'DELETE',
     });

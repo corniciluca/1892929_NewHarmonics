@@ -44,7 +44,6 @@ public class FollowService {
     }
 
     public Set<UserEntity> getFollowers(Long artistId) {
-    // Find all users who follow this artist
     List<UserEntity> allUsers = userRepository.findAll();
     return allUsers.stream()
             .filter(user -> user.getFollowedArtists().stream()

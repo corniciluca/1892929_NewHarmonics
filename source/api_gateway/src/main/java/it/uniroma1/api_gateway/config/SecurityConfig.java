@@ -28,7 +28,6 @@ public class SecurityConfig {
         this.jwtConfig = jwtConfig;
     }
 
-    // Correctly decode the Base64 secret key
     @Bean
     public ReactiveJwtDecoder jwtDecoder() {
         String rawSecret = jwtConfig.getSecret();
@@ -37,7 +36,6 @@ public class SecurityConfig {
         return NimbusReactiveJwtDecoder.withSecretKey(secretKey).build();
     }
 
-    // Converter to extract authorities from the 'role' claim
     @Bean
     public ReactiveJwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
@@ -59,17 +57,13 @@ public class SecurityConfig {
                         .jwt(jwt -> jwt.jwtDecoder(jwtDecoder()))
                 )
                 .authorizeExchange(exchange -> exchange
-                        // Permit OPTIONS for CORS pre-flight
                         .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // Public auth paths
                         .pathMatchers("/auth/**").permitAll()
 
-                        // Public song browsing and searching
                         .pathMatchers(HttpMethod.GET, "/songs/**").permitAll()
                         .pathMatchers(HttpMethod.GET, "/songs/search/**").permitAll()
 
-                        // Add the new file-update endpoint to the ARTIST rules
                         .pathMatchers(HttpMethod.POST, "/songs/upload").hasRole("ARTIST")
                         .pathMatchers(HttpMethod.POST, "/songs/{id}/update").hasRole("ARTIST") // <-- ADD THIS
                         
@@ -79,7 +73,6 @@ public class SecurityConfig {
                         .pathMatchers(HttpMethod.PUT, "/songs/**").hasRole("ARTIST")
                         .pathMatchers(HttpMethod.DELETE, "/songs/**").hasRole("ARTIST")
 
-                        // All other requests (e.g., /users, /feed, /notifications) require a valid JWT
                         .anyExchange().authenticated()
                 );
 

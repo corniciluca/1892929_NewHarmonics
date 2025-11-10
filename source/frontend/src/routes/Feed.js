@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Typography, Grid, CircularProgress, Alert } from '@mui/material';
-import SongCard from '../components/SongCard'; // Import your SongCard
-import { getUserFeed } from '../api/songApi'; // Import your standardized API function
+import SongCard from '../components/SongCard';
+import { getUserFeed } from '../api/songApi'; 
 
-// Accept currentUser to pass it down to SongCard for 'like' functionality
 export default function FeedPage({ currentUser }) {
     const [songs, setSongs] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -11,7 +10,6 @@ export default function FeedPage({ currentUser }) {
 
     useEffect(() => {
         const fetchFeed = async () => {
-            // This component requires a logged-in user
             if (!currentUser) {
                 setError("You must be logged in to view your feed.");
                 setLoading(false);
@@ -19,8 +17,6 @@ export default function FeedPage({ currentUser }) {
             }
 
             try {
-                // Use the API function from songApi.js
-                // It automatically handles auth headers
                 const data = await getUserFeed(currentUser.id); //
                 setSongs(data);
             } catch (e) {

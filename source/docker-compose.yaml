@@ -25,7 +25,6 @@ services:
       timeout: 20s
       retries: 3
 
-# React Frontend
   frontend:
     <<: *base-service
     build: ./frontend
@@ -37,7 +36,6 @@ services:
 
   notification-service:
     <<: *base-service
-    # build context corrected to match local folder name
     build: ./notification_service
     container_name: notification-service
     ports:
@@ -50,7 +48,6 @@ services:
 
   api-gateway:
     <<: *base-service
-    # build context corrected to match local folder name
     build: ./api_gateway
     container_name: api-gateway
     ports:
@@ -64,7 +61,6 @@ services:
 
   user-service:
     <<: *base-service
-    # build context corrected to match local folder name
     build: ./user_service
     container_name: user-service
     ports:
@@ -144,11 +140,9 @@ services:
       timeout: 10s
       retries: 5
 
-# Default driver is 'bridge', so it can be omitted
 networks:
   microservices-network:
 
-# Default driver is 'local', so it can be omitted
 volumes:
   mongo_data:
   userdb_data:

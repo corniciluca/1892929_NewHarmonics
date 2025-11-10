@@ -14,7 +14,6 @@ import { likeSong, unlikeSong } from '../api/songApi';
 
 const gateway = process.env.REACT_APP_API_GATEWAY_URL || 'http://localhost:9000';
 
-// Define the marquee (scrolling) animation
 const marquee = keyframes`
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); } /* Scrolls 1 copy length */
@@ -93,8 +92,6 @@ export default function SongCard({ song, color, currentUser }) {
   const coverImageUrl = song.id ? `${gateway}/songs/${song.id}/cover` : null;
   const { playSong, openSongDetail } = player || {};
 
-  // Helper object for scrolling styles ---
-  // This will be applied conditionally to the text
   const scrollingSx = () => ({
       display: 'inline-block',
       whiteSpace: 'nowrap',
@@ -135,7 +132,7 @@ export default function SongCard({ song, color, currentUser }) {
                 noWrap
                 sx={{ width: '100%', overflow: 'hidden' }} // The "window"
               >
-                <Box // The "content"
+                <Box
                   component="span"
                   // Add a class name for the card's hover to target
                   className={isTitleOverflowing ? "song-card-title-scroll" : ""}
@@ -186,14 +183,14 @@ export default function SongCard({ song, color, currentUser }) {
                       to={`/user/${artistId}`}
                       sx={
                         {
-                          color: 'inherit', // Start as inherited color
-                          textDecoration: 'none', // No underline by default
+                          color: 'inherit',
+                          textDecoration: 'none',
                           width: '100%',
                           display: 'inline-block',
                           overflow: 'hidden',
                           '&:hover': {
-                            color: color || 'primary.main', // Change to card's color
-                            fontWeight: 600, // Make it bolder
+                            color: color || 'primary.main', 
+                            fontWeight: 600,
                           }
                         }
                       }

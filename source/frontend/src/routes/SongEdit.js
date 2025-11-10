@@ -30,20 +30,17 @@ export default function SongEdit() {
     });
   }, [id]);
 
-  // This function *opens* the dialog
   const handleSubmit = (e) => {
-    e.preventDefault(); // Prevent form from submitting immediately
+    e.preventDefault();
     setUpdateError(null);
-    setOpenDialog(true); // Open the confirmation dialog
+    setOpenDialog(true); 
   };
 
-  // This function closes the dialog
   const handleCloseDialog = () => {
     if (isUpdating) return;
     setOpenDialog(false);
   };
 
-  // This  function contains the *actual* update logic
   const handleConfirmUpdate = async () => {
       setIsUpdating(true);
       setUpdateError(null);
@@ -52,11 +49,10 @@ export default function SongEdit() {
         title,
         genre,
         album,
-        audioFile, // Pass the audio file state
-        coverFile  // Pass the cover file state
+        audioFile, 
+        coverFile  
       };
       try {
-          // Call the  'updateSongDetails' function
           await updateSongDetails(id, songData);
 
           setIsUpdating(false);
@@ -65,7 +61,7 @@ export default function SongEdit() {
       } catch (err) {
             console.error("Failed to update song:", err);
             setUpdateError(err.message || "An unknown error occurred. (Check gateway logs)");
-            setIsUpdating(false); // Stop loading
+            setIsUpdating(false);
       }
     };
 

@@ -32,31 +32,25 @@ function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // 2. CREA LA NUOVA FUNZIONE DI FETCH
   const fetchAndSetUser = () => {
     setIsLoading(true);
-    // Prima, controlla se il token è valido
     checkLoginStatus()
       .then(validationResponse => {
         const isValidId = validationResponse.userId !== null &&
                                   validationResponse.userId !== undefined &&
                                   validationResponse.userId !== "undefined" &&
                                   !isNaN(parseInt(validationResponse.userId))
-        if (validationResponse.valid && isValidId) { // Use the new check
-          // Se valido, usa lo userId per prendere i dati completi
+        if (validationResponse.valid && isValidId) { 
           return getUserById(validationResponse.userId);
         } else {
-          // Se non è valido, lancia un errore per andare al .catch()
           throw new Error("Sessione non valida o scaduta.");
         }
       })
       .then(user => {
-        // Ora abbiamo l'oggetto utente completo!
         setCurrentUser(user);
         localStorage.setItem('currentUser', JSON.stringify(user));
       })
       .catch(() => {
-        // Se un qualunque passaggio fallisce, esegui il logout
         setCurrentUser(null);
         localStorage.clear();
       })
@@ -65,10 +59,7 @@ function App() {
       });
   };
 
-  // All'avvio dell'app, controlla se c'è una sessione attiva
-// 3. USA LA NUOVA FUNZIONE in useEffect
   useEffect(() => {
-    // Non controlla più localStorage, chiama direttamente la nuova funzione
     fetchAndSetUser();
   }, []);
 
@@ -77,7 +68,7 @@ function App() {
   };
 
   const handleLogout = () => {
-    logout(); // This just clears localStorage
+    logout();
     setCurrentUser(null);
   };
 
@@ -87,7 +78,7 @@ function App() {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>; // O uno spinner di caricamento
+    return <div>Loading...</div>;
   }
 
   const isLoggedIn = !!currentUser;
@@ -119,7 +110,6 @@ function App() {
           element={isLoggedIn && isArtist ? <Upload currentUser={currentUser} /> : <Navigate to="/" />} 
         />
         
-        {/* 4. Add all your missing routes */}
         <Route path="/search" element={<SearchResults currentUser={currentUser}/>} />
         <Route 
           path="/following" 

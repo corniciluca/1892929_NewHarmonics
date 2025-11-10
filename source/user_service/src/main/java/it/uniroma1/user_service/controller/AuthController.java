@@ -79,13 +79,10 @@ public class AuthController {
     @GetMapping("/validate")
     public ResponseEntity<?> validateToken(@RequestHeader(value = "Authorization", required = false) String authHeader) {
 
-        // Check if Authorization header is present and starts with "Bearer "
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
 
-            // Validate token (signature and expiration)
             if (jwtUtil.validateToken(token) && !jwtUtil.isTokenExpired(token)) {
-                // SUCCESS: Token is valid
                 return ResponseEntity.ok().body(Map.of(
                         "valid", true,
                         "username", jwtUtil.extractUsername(token),

@@ -11,9 +11,8 @@ export default function Upload({ currentUser }) {
   const [title, setTitle] = useState("");
   const [album, setAlbum] = useState("");
   const [genre, setGenre] = useState("");
-  const [file, setFile] = useState(null); // This is the audio file
+  const [file, setFile] = useState(null); 
   
-  // 1. Add new state for the cover image
   const [coverImageFile, setCoverImageFile] = useState(null); 
   
   const navigate = useNavigate();
@@ -29,7 +28,6 @@ export default function Upload({ currentUser }) {
       const artistName = currentUser.username;
       const artistId = currentUser.id;
       
-      // 2. Pass all parameters, including the new coverImageFile
       await uploadSong({ 
         file, 
         title, 
@@ -37,7 +35,7 @@ export default function Upload({ currentUser }) {
         artistId: artistId,
         album, 
         genre,
-        coverImageFile // <-- Add the new cover image file
+        coverImageFile 
       });
       
       alert("Song uploaded!");
@@ -61,7 +59,6 @@ export default function Upload({ currentUser }) {
             <TextField label="Album" fullWidth margin="normal" value={album} onChange={e => setAlbum(e.target.value)} required/>
             <TextField label="Genre" fullWidth margin="normal" value={genre} onChange={e => setGenre(e.target.value)} required/>
             
-            {/* 3. Updated Grid for two separate file inputs */}
             <Grid container spacing={2} sx={{mt:2, mb:2}} justifyContent="space-around">
               
               {/* Song File Input */}
@@ -94,7 +91,6 @@ export default function Upload({ currentUser }) {
               </Button>
               <Button variant="contained" color="primary"
                 sx={{ borderRadius:3, minWidth:110 }} type="submit"
-                // 4. Update disabled check to include the coverImageFile
                 disabled={!title || !file || !album || !genre || !coverImageFile}>
                 Upload
               </Button>

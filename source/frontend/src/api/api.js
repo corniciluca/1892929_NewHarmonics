@@ -1,12 +1,7 @@
 // L'URL di base ora punta sempre all'API Gateway
 const API_GATEWAY_URL = 'http://localhost:9000';
 
-/**
- * Funzione helper per tutte le chiamate API.
- * Aggiunge l'header di autorizzazione se è presente un token.
- * Gestisce la logica di base della richiesta e degli errori.
- * È esportata per essere usata da altri file API (es. userApi.js).
- */
+
 export async function apiRequest(path, options = {}) {
     const token = localStorage.getItem('authToken');
     const headers = {
@@ -14,13 +9,9 @@ export async function apiRequest(path, options = {}) {
         ...options.headers,
     };
 
-    // --- ADD THIS BLOCK ---
-    // If we are sending FormData (like a file), we MUST let the browser
-    // set the Content-Type header itself (so it can add the 'boundary').
     if (options.body instanceof FormData) {
         delete headers['Content-Type'];
     }
-    // --- END OF NEW BLOCK ---
 
     if (token) {
         headers['Authorization'] = `Bearer ${token}`;
@@ -34,7 +25,6 @@ export async function apiRequest(path, options = {}) {
     if (!response.ok) {
         // Tenta di leggere il corpo dell'errore, altrimenti usa lo status
         const errorBody = await response.json().catch(() => ({ message: `HTTP Error: ${response.status}` }));
-        // Check for the "error" key from your gateway filter
         throw new Error(errorBody.error || errorBody.message || 'Qualcosa è andato storto');
     }
 
@@ -60,7 +50,6 @@ export async function login(username, password) {
         localStorage.removeItem('authToken');
         throw new Error("La risposta del login non è valida.");
     }
-    // Non restituisce più l'utente
 }
 
 /**
@@ -76,13 +65,13 @@ export function logout() {
  * Chiama l'endpoint di registrazione.
  */
 export async function register(user) {
-    // 1. CHIAMATA A /auth/register (come da filtro gateway)
+    // CHIAMATA A /auth/register (come da filtro gateway)
     const response = await apiRequest('/auth/register', {
         method: 'POST',
         body: JSON.stringify(user),
     });
 
-    // 2. SALVA IL TOKEN
+    // SALVA IL TOKEN
     if (response && response.token) {
         localStorage.setItem('authToken', response.token);
     } else {
@@ -95,7 +84,7 @@ export async function register(user) {
  * @returns {Promise<any>} Dati di validazione: { valid: true, userId: "1", ... }
  */
 export async function checkLoginStatus() {
-    // 3. CHIAMA /auth/validate
+    // CHIAMA /auth/validate
     return apiRequest('/auth/validate');
 }
 

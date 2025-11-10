@@ -23,7 +23,6 @@ export default function EditProfile({ user, onUserUpdate }) {
     setError('');
     setSuccess('');
 
-    // Validation for password change
     if (newPassword || currentPassword) {
         if (newPassword !== confirmPassword) {
             setError("New passwords do not match.");
@@ -36,7 +35,6 @@ export default function EditProfile({ user, onUserUpdate }) {
     }
 
     try {
-      // Construct payload with optional password fields
       const payload = { 
           username, 
           email,
@@ -47,12 +45,10 @@ export default function EditProfile({ user, onUserUpdate }) {
       onUserUpdate(updatedUser); 
       setSuccess('Profile updated successfully');
       
-      // Clear password fields on success
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (err) {
-      // Display error message from backend (e.g., "Current password does not match")
       setError(err.message || 'Error during update!');
     }
   };

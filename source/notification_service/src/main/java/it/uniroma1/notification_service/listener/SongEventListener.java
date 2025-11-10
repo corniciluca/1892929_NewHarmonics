@@ -36,7 +36,6 @@ public class SongEventListener {
             String songTitle = (String) eventData.get("songTitle");
             String songId = (String) eventData.get("songId");
             
-            // Create notifications for all followers
             notificationService.createNotificationsForArtistFollowers(
                 artistId, artistName, songTitle, songId
             );

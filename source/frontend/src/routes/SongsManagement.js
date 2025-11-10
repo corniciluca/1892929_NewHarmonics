@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from "react";
 import {
   Container, Typography, Box, Paper, Avatar, Button,
-  // 1. Import Dialog components (already present)
   Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
   
-  // 2. Import Table components and new Icon
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow
 } from "@mui/material";
-import MusicNoteIcon from "@mui/icons-material/MusicNote"; // Replaced ImageIcon
+import MusicNoteIcon from "@mui/icons-material/MusicNote"; 
 import { useNavigate } from "react-router-dom";
 import { getSongsByArtistId, deleteSong } from "../api/songApi";
 
-// 3. Define the gateway URL to build image paths
 const gateway = process.env.REACT_APP_API_GATEWAY_URL || 'http://localhost:9000';
 
 export default function SongsManagement({ currentUser }) {
@@ -58,7 +55,6 @@ export default function SongsManagement({ currentUser }) {
         Manage Your Songs
       </Typography>
       
-      {/* 5. Replaced Stack with a Table for better management */}
       <TableContainer component={Paper} elevation={3} sx={{ borderRadius: 6 }}>
         <Table sx={{ minWidth: 650 }}>
           <TableHead>
@@ -71,7 +67,6 @@ export default function SongsManagement({ currentUser }) {
           </TableHead>
           <TableBody>
             {songs.map((song) => {
-              // Build the cover image URL
               const coverImageUrl = song.coverImageUrl ? `${gateway}/songs/${song.id}/cover` : null;
 
               return (
@@ -85,7 +80,7 @@ export default function SongsManagement({ currentUser }) {
                       <Avatar 
                         variant="rounded"
                         sx={{ width: 56, height: 56, bgcolor: "#ede7f6", mr: 2 }}
-                        src={coverImageUrl} // Use src property
+                        src={coverImageUrl}
                       >
                         {/* Fallback Icon */}
                         {!coverImageUrl && <MusicNoteIcon sx={{ color: "#7e57c2", fontSize: 36 }}/>}
@@ -125,7 +120,7 @@ export default function SongsManagement({ currentUser }) {
         </Table>
       </TableContainer>
 
-      {/* Delete Confirmation Dialog (already correct) */}
+      {/* Delete Confirmation Dialog*/}
       <Dialog
         open={openDialog}
         onClose={handleCloseDialog}

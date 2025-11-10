@@ -33,7 +33,6 @@ public class NotificationEntity {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
     
-    // Metadata stored as separate columns for H2 compatibility
     @Column(name = "artist_id")
     private Long artistId;
     
@@ -63,11 +62,9 @@ public class NotificationEntity {
         }
     }
 
-    // Constructors
     public NotificationEntity() {
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }

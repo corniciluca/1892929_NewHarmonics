@@ -22,10 +22,10 @@ spring:
     template:
       retry:
         enabled: true
-        max-attempts: 10       # retry up to 10 times
-        initial-interval: 5000 # start retrying after 5 seconds
-        multiplier: 2.0        # exponential backoff
-        max-interval: 30000    # max interval between retries in ms
+        max-attempts: 10       
+        initial-interval: 5000 
+        multiplier: 2.0        
+        max-interval: 30000   
 
   servlet:
     multipart:

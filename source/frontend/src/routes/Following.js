@@ -5,10 +5,10 @@ import {
     Grid,
     CircularProgress,
     Alert,
-    Paper, // Import Paper
-    Avatar // Import Avatar
+    Paper, 
+    Avatar 
 } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom'; // Import RouterLink
+import { Link as RouterLink } from 'react-router-dom'; 
 import { getFollowedArtists } from '../api/userApi';
 
 export default function Following({ currentUser }) {
@@ -58,11 +58,10 @@ export default function Following({ currentUser }) {
       ) : (
         <Grid container spacing={4}>
           {followedArtists.map(artist => (
-            // Use the consistent styling from UserProfile.js
             <Grid item xs={12} sm={6} md={3} key={artist.id}>
               <Paper
                 component={RouterLink}
-                to={`/user/${artist.id}`} // Link to the artist's profile
+                to={`/user/${artist.id}`} 
                 sx={{
                   p: 2,
                   textAlign: 'center',
