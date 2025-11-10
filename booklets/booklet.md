@@ -555,7 +555,6 @@ The workload has been divided in 5 sprints:
 5. **Documentation** - final revision and finalization of the documentation
 
 ### Sprint 1: Project Definition
-**Duration:** December 23, 2024 - December 31, 2024 (9 days)  
 **Goal:** Establish project foundation, scope, and technical architecture  
 **Team Capacity:** 20 hours  
 **Planned Story Points:** 0 (Planning phase)
@@ -569,7 +568,6 @@ The workload has been divided in 5 sprints:
 - Project Proposal
 - 
 ### Sprint 2: Project Setup
-**Duration:** January 2, 2025 - January 13, 2025 (12 days)  
 **Goal:** Define all user stories, create wireframes, and estimate project complexity  
 **Team Capacity:** 17 hours  
 **Planned Story Points:** 0 (Documentation phase)
@@ -581,21 +579,19 @@ The workload has been divided in 5 sprints:
 - Documentation 
 
 ### Sprint 3: Core Functionalities
-**Duration:** January 14, 2025 - January 31, 2025 (18 days)  
 **Goal:** Implement core backend and frontend for song and user management  
 **Team Capacity:** 88 hours  
-**Planned Story Points:** 46 (US-1, US-2, US-3, US-4, US-5, US-12, US-13, US-14, US-15, US-19)
+**Planned Story Points:** (US-1, US-2, US-3, US-4, US-5, US-12, US-13, US-14, US-15, US-19)
 
 **Sprint Goal Achievement:**
 - All core user and song management features implemented
 - Authentication and authorization working
 - File upload system functional
 
-### Sprint 4: Advanced Functionalities
-**Duration:** February 1, 2025 - October 31, 2025 (273 days)  
+### Sprint 4: Advanced Functionalities 
 **Goal:** Complete all advanced features including social, search, and notifications  
 **Team Capacity:** 88 hours  
-**Planned Story Points:** 57 (US-6, US-7, US-8, US-9, US-10, US-11, US-16, US-17, US-18, US-20, US-21, US-22)
+**Planned Story Points:** (US-6, US-7, US-8, US-9, US-10, US-11, US-16, US-17, US-18, US-20, US-21, US-22)
 
 **Sprint Goal Achievement:**
 - All social features (follow/unfollow) implemented
@@ -606,7 +602,6 @@ The workload has been divided in 5 sprints:
 
 
 ### Sprint 5: Documentation
-**Duration:** November 1, 2025 - November 10, 2025 (10 days)  
 **Goal:** Finalize all documentation and prepare for project discussion  
 **Team Capacity:** 24 hours  
 **Planned Story Points:** 0 (Documentation phase)
